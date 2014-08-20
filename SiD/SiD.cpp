@@ -19,7 +19,7 @@ END_MESSAGE_MAP()
 
 
 // CSiDApp construction
-
+//
 CSiDApp::CSiDApp()
 {
 	// support Restart Manager
@@ -31,7 +31,6 @@ CSiDApp::CSiDApp()
 
 
 // The one and only CSiDApp object
-
 CSiDApp theApp;
 
 
@@ -66,20 +65,16 @@ BOOL CSiDApp::InitInstance()
 	// Change the registry key under which our settings are stored
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
-	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+	//SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
 	CSiDDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK
 	}
 	else if (nResponse == IDCANCEL)
 	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
 	}
 	else if (nResponse == -1)
 	{

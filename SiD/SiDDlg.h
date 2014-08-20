@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
 
 // CSiDDlg dialog
@@ -31,4 +32,11 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
+public:
+	afx_msg void OnBnClickedBtnStart();
+	afx_msg void OnBnClickedBtnPause();
+	afx_msg void OnBnClickedBtnStop();
+	// Флажок "Фазовый портрет"
+	CButton m_chkPhaseDiag;
+	afx_msg void OnBnClickedPhasediag();
 };

@@ -1,5 +1,5 @@
 
-// SiD.h : main header file for the PROJECT_NAME application
+// SiD.h : main header file for the SiD application
 //
 
 #pragma once

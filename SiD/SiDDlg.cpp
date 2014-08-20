@@ -56,12 +56,17 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_PHASEDIAG, m_chkPhaseDiag);
 }
 
 BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BTN_START, &CSiDDlg::OnBnClickedBtnStart)
+	ON_BN_CLICKED(IDC_BTN_PAUSE, &CSiDDlg::OnBnClickedBtnPause)
+	ON_BN_CLICKED(IDC_BTN_STOP, &CSiDDlg::OnBnClickedBtnStop)
+	ON_BN_CLICKED(IDC_PHASEDIAG, &CSiDDlg::OnBnClickedPhasediag)
 END_MESSAGE_MAP()
 
 
@@ -96,7 +101,28 @@ BOOL CSiDDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// TODO: Add extra initialization here
+	///////////////////////////////////////////////////////////////////////////
+
+	//установим иконки кнопкам
+
+	CButton *pBtn = (CButton*)this->GetDlgItem(IDC_BTN_START);
+	HANDLE hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_START), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
+	pBtn->SetIcon((HICON)hBtnIcon);
+
+	pBtn = 0;
+
+	pBtn = (CButton*)this->GetDlgItem(IDC_BTN_PAUSE);
+	hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_PAUSE), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
+	pBtn->SetIcon((HICON)hBtnIcon);
+
+	pBtn = 0;
+
+	pBtn = (CButton*)this->GetDlgItem(IDC_BTN_STOP);
+	hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_STOP), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
+	pBtn->SetIcon((HICON)hBtnIcon);
+
+
+	///////////////////////////////////////////////////////////////////////////
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -114,12 +140,12 @@ void CSiDDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// If you add a minimize button to your dialog, you will need the code below
-//  to draw the icon.  For MFC applications using the document/view model,
-//  this is automatically done for you by the framework.
 
 void CSiDDlg::OnPaint()
 {
+	// If you add a minimize button to your dialog, you will need the code below
+	//  to draw the icon.  For MFC applications using the document/view model,
+	//  this is automatically done for you by the framework.
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // device context for painting
@@ -151,5 +177,44 @@ HCURSOR CSiDDlg::OnQueryDragIcon()
 }
 
 void CSiDDlg::OnOK(){
+	//чтобы по нажатию "Enter" окно не закрывалось, нужно оставить пустой эту процедуру
+}
+
+
+void CSiDDlg::OnBnClickedBtnStart()
+{
+	GetDlgItem(IDC_BTN_START)	->EnableWindow(0);
+	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(1);
+	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(1);
+}
+
+
+void CSiDDlg::OnBnClickedBtnPause()
+{
+	GetDlgItem(IDC_BTN_START)	->EnableWindow(1);
+	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(0);
+	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(1);
+}
+
+
+void CSiDDlg::OnBnClickedBtnStop()
+{
+	GetDlgItem(IDC_BTN_START)	->EnableWindow(1);
+	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(0);
+	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(0);
+}
+
+
+void CSiDDlg::OnBnClickedPhasediag()
+{
+	
+	if (m_chkPhaseDiag.GetCheck()){
+		//отобразить окно фазового портрета
+		
+	}
+	else{
+		//закрыть окно фазового портрета, если оно открыто
+	
+	}
 
 }
