@@ -5,6 +5,10 @@
 #pragma once
 #include "afxwin.h"
 
+#define ID_DRAWTIMER 191
+
+class CPierceDiode;		//объ€влен в PierceDiode.h
+
 
 // CSiDDlg dialog
 class CSiDDlg : public CDialogEx
@@ -12,6 +16,7 @@ class CSiDDlg : public CDialogEx
 // Construction
 public:
 	CSiDDlg(CWnd* pParent = NULL);	// standard constructor
+	~CSiDDlg();
 
 // Dialog Data
 	enum { IDD = IDD_SID_DIALOG };
@@ -21,6 +26,17 @@ public:
 
 
 // Implementation
+private:
+	CString m_strAlpha;
+
+	//update every nFrameTime ms
+	DWORD nFrameTime;
+
+	//—татус симул€ции: 0 - не запущена, 1 - идет, 2 - была запущена, но приостановлена
+	BOOL m_bSimIsRun;
+
+	void OnTimer(UINT);
+
 protected:
 	HICON m_hIcon;
 
@@ -33,10 +49,31 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+	//«начение параметра ѕирса, деленного на пи
+	double m_fAlphaWPi;
+
+	//числ. симул€ци€ динамики “ј ќ… длительности должна выполн€тьс€ не ранее, чем за nFrameTime мс
+	double fTimeStepPerFrame;
+
+	//таймер, сигнализирующий о том, что пора перерисовать графики по новым данным симул€ции
+	CEvent eventTimer;
+
+	CPierceDiode* thePierceDiode;
+
 	afx_msg void OnBnClickedBtnStart();
 	afx_msg void OnBnClickedBtnPause();
 	afx_msg void OnBnClickedBtnStop();
 	// ‘лажок "‘азовый портрет"
 	CButton m_chkPhaseDiag;
 	afx_msg void OnBnClickedPhasediag();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnEnKillfocusAlpha();
 };
+
+
+BOOL fnCheckNumber(CString *);
+
+
+BOOL fnItIsSignificantNumber(TCHAR);
+
+

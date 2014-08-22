@@ -7,11 +7,14 @@
 #include "SiDDlg.h"
 #include "afxdialogex.h"
 
+//#include "CommonData.h"
+#include "PierceDiode.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
+/////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
 class CAboutDlg : public CDialogEx
@@ -43,14 +46,29 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSiDDlg dialog
 
+/////////////////////////////////////////////
+// CSiDDlg dialog
 
 
 CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSiDDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	m_bSimIsRun = 0;
+
+	fTimeStepPerFrame = 0.1;
+
+	m_fAlphaWPi = 1.1;
+	m_strAlpha = CString("1.1");
+
+	thePierceDiode = new CPierceDiode(this);
+}
+
+CSiDDlg::~CSiDDlg()
+{
+	delete thePierceDiode;
 }
 
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
@@ -67,6 +85,7 @@ BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_PAUSE, &CSiDDlg::OnBnClickedBtnPause)
 	ON_BN_CLICKED(IDC_BTN_STOP, &CSiDDlg::OnBnClickedBtnStop)
 	ON_BN_CLICKED(IDC_PHASEDIAG, &CSiDDlg::OnBnClickedPhasediag)
+	ON_EN_KILLFOCUS(IDC_ALPHA, &CSiDDlg::OnEnKillfocusAlpha)
 END_MESSAGE_MAP()
 
 
@@ -121,6 +140,8 @@ BOOL CSiDDlg::OnInitDialog()
 	hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_STOP), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
 	pBtn->SetIcon((HICON)hBtnIcon);
 
+
+	SetDlgItemTextW(IDC_ALPHA, (LPCTSTR)m_strAlpha);
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -186,6 +207,18 @@ void CSiDDlg::OnBnClickedBtnStart()
 	GetDlgItem(IDC_BTN_START)	->EnableWindow(0);
 	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(1);
 	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(1);
+
+	if (m_bSimIsRun != 1)
+	{			
+		SetTimer(ID_DRAWTIMER, nFrameTime, NULL);
+		
+		if (0 == m_bSimIsRun)
+			thePierceDiode->Initialize();
+		thePierceDiode->StartCalcThread();
+		
+		m_bSimIsRun = 1;
+		
+	};
 }
 
 
@@ -194,6 +227,20 @@ void CSiDDlg::OnBnClickedBtnPause()
 	GetDlgItem(IDC_BTN_START)	->EnableWindow(1);
 	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(0);
 	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(1);
+
+	m_bSimIsRun = 0;
+
+	thePierceDiode->SetRunFlag(false);
+
+	eventTimer.SetEvent();
+	KillTimer(ID_DRAWTIMER);
+
+	thePierceDiode->ClearData();
+
+	/*if (m_pPhaseDiagWnd)
+		m_pPhaseDiagWnd->InitializeYAxe();
+
+	RedrawGraphs();*/
 }
 
 
@@ -202,6 +249,13 @@ void CSiDDlg::OnBnClickedBtnStop()
 	GetDlgItem(IDC_BTN_START)	->EnableWindow(1);
 	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(0);
 	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(0);
+
+	m_bSimIsRun = 2;
+
+	thePierceDiode->SetRunFlag(false);
+
+	eventTimer.SetEvent();
+	KillTimer(ID_DRAWTIMER);
 }
 
 
@@ -218,3 +272,213 @@ void CSiDDlg::OnBnClickedPhasediag()
 	}
 
 }
+
+
+BOOL CSiDDlg::PreTranslateMessage(MSG* pMsg)
+{
+
+	//Переход на следующий диалоговый элемент по нажатию "Enter"
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+	{
+	    CWnd* pFocus = GetFocus();
+		BOOL bKind = pFocus->IsKindOf(RUNTIME_CLASS(CEdit));
+		if (pFocus && bKind)
+	    {
+	        NextDlgCtrl();
+	        return TRUE;
+	    }
+	}
+	////
+
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CSiDDlg::OnEnKillfocusAlpha()
+{
+	CString strBuf;
+	CString& refstrBuf = strBuf;
+	
+	GetDlgItemTextW(IDC_ALPHA, refstrBuf);
+	
+	double fbuf;
+	
+	if (fnCheckNumber(&strBuf)){
+		fbuf = _wtof(strBuf);
+	}
+	else{
+		AfxMessageBox(_T("Некорректное число (параметр Пирса)"));
+		SetDlgItemTextW(IDC_ALPHA, (LPCTSTR)m_strAlpha);
+		return void();
+	}
+	
+	if (m_fAlphaWPi != fbuf){
+		m_fAlphaWPi = fbuf;
+		//thePierceDiode->SetAlpha(m_fAlphaWPi);
+	};
+	m_strAlpha = strBuf;
+	SetDlgItemTextW(IDC_ALPHA, (LPCTSTR)m_strAlpha);
+}
+
+
+BOOL fnCheckNumber(CString* pstrNumber)
+{
+	
+	CString bufInt=_T(""), bufFract=_T(""), str = *pstrNumber;
+	
+	if (0 == str.GetLength()){
+		*pstrNumber = _T("0");
+		return TRUE;
+	};
+	
+	CString alphabet = _T("0123456789");
+		
+	TCHAR symbol;
+	
+	bool bHaveSignificantSymbol = false;
+	BOOL bSignificant = FALSE;
+	
+	str.Replace(_T(","), _T("."));
+	
+	int nInd, nInd2;
+		
+	
+	nInd = str.Find(_T("."));
+	if (-1 == nInd){
+		//целое число
+		for (int i=0; i<str.GetLength(); i++){
+	
+			symbol = str.GetAt(i);
+			bSignificant = fnItIsSignificantNumber(symbol);
+	
+	
+			if (bHaveSignificantSymbol){
+	
+				if (!bSignificant)
+					return FALSE;	//введены лишние символы
+	
+			}
+			else{
+	
+				if (bSignificant){
+					bHaveSignificantSymbol = true;
+				}
+				else{
+					continue;
+				};
+	
+			};
+	
+			bufInt += symbol;
+	
+		}
+	
+		if (0 == bufInt.GetLength())
+			bufInt = _T("0");
+	
+		*pstrNumber = bufInt;
+		return TRUE;
+	
+	}
+	else{
+	
+		nInd2 = str.Find(_T("."), nInd+1);
+		if (-1 == nInd2){
+			//целая и дробная части
+				
+			for (int i=0; i<nInd; i++){
+	
+				symbol = str.GetAt(i);
+				bSignificant = fnItIsSignificantNumber(symbol);
+	
+				if (bHaveSignificantSymbol){
+	
+					if (!bSignificant)
+						return FALSE;	//введены лишние символы
+	
+				}
+				else{
+	
+					if (bSignificant){
+						bHaveSignificantSymbol = true;
+					}
+					else{
+						continue;
+					};
+	
+				};
+	
+				bufInt += symbol;
+	
+			};
+	
+			if (0 == bufInt.GetLength())
+				bufInt = _T("0");
+	
+			bHaveSignificantSymbol = false;
+	
+			for (int i=str.GetLength()-1; i>nInd; i--){
+	
+				symbol = str.GetAt(i);
+				bSignificant = fnItIsSignificantNumber(symbol);
+	
+				if (bHaveSignificantSymbol){
+	
+					if (!bSignificant)
+						return FALSE;	//введены лишние символы
+	
+				}
+				else{
+	
+					if (bSignificant){
+						bHaveSignificantSymbol = true;
+					}
+					else{
+						continue;
+					};
+	
+				};
+	
+				bufFract = symbol + bufFract;
+	
+			};
+	
+			if (0 == bufFract.GetLength())
+				bufFract = _T("0");
+	
+			*pstrNumber = bufInt + _T(".") + bufFract;
+			return TRUE;
+	
+		}
+		else{
+			//несколько разделителей дробной и целой частей - ошибка
+			return FALSE;
+		};
+	
+	};
+	
+	
+		
+	return TRUE;
+}
+
+
+BOOL fnItIsSignificantNumber(TCHAR symbol)
+{
+	
+	CString significantAlphabet = _T("123456789");
+	
+	if (significantAlphabet.Find(symbol) > -1)
+		return TRUE;
+	else
+		return FALSE;
+	
+}
+
+
+void CSiDDlg::OnTimer(UINT)
+{
+	eventTimer.SetEvent();
+}
+
+

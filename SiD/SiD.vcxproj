@@ -99,6 +99,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CommonData.h" />
+    <ClInclude Include="PhaseDiagWnd.h" />
+    <ClInclude Include="PierceDiode.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SiD.h" />
     <ClInclude Include="SiDDlg.h" />
@@ -106,6 +109,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="PhaseDiagWnd.cpp" />
+    <ClCompile Include="PierceDiode.cpp" />
     <ClCompile Include="SiD.cpp" />
     <ClCompile Include="SiDDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
