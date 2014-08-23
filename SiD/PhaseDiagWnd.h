@@ -17,9 +17,14 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	HICON m_hIcon;
 
 	DECLARE_MESSAGE_MAP()
 public:
 	// Область вывода графика
 	CStatic m_stcGraph;
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	afx_msg void OnPaint();
+	afx_msg void OnClose();
 };

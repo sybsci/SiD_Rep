@@ -9,6 +9,7 @@
 
 //#include "CommonData.h"
 #include "PierceDiode.h"
+#include "PhaseDiagWnd.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -64,11 +65,16 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 	m_strAlpha = CString("1.1");
 
 	thePierceDiode = new CPierceDiode(this);
+
+	pPhaseDiagWnd = NULL;
 }
 
 CSiDDlg::~CSiDDlg()
 {
 	delete thePierceDiode;
+
+	if (pPhaseDiagWnd)
+		delete pPhaseDiagWnd;
 }
 
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
@@ -261,14 +267,22 @@ void CSiDDlg::OnBnClickedBtnStop()
 
 void CSiDDlg::OnBnClickedPhasediag()
 {
-	
 	if (m_chkPhaseDiag.GetCheck()){
 		//отобразить окно фазового портрета
-		
+		if (!pPhaseDiagWnd)
+		{
+			pPhaseDiagWnd = new CPhaseDiagWnd();
+			pPhaseDiagWnd->Create(IDD_PHASEDIAGWND, GetDesktopWindow());
+			pPhaseDiagWnd->ShowWindow(SW_SHOW);
+		}
 	}
 	else{
 		//закрыть окно фазового портрета, если оно открыто
-	
+		if (pPhaseDiagWnd)
+		{
+			pPhaseDiagWnd->CloseWindow();
+			DestroyPhaseDiagWnd();
+		}
 	}
 
 }
@@ -482,3 +496,8 @@ void CSiDDlg::OnTimer(UINT)
 }
 
 
+void CSiDDlg::DestroyPhaseDiagWnd()
+{
+	delete pPhaseDiagWnd;
+	pPhaseDiagWnd = 0;
+}

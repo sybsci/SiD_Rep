@@ -8,6 +8,7 @@
 #define ID_DRAWTIMER 191
 
 class CPierceDiode;		//объ€влен в PierceDiode.h
+class CPhaseDiagWnd;	//объ€влен в PhaseDiagWnd.h
 
 
 // CSiDDlg dialog
@@ -58,7 +59,11 @@ public:
 	//таймер, сигнализирующий о том, что пора перерисовать графики по новым данным симул€ции
 	CEvent eventTimer;
 
+	//главный объект программы
 	CPierceDiode* thePierceDiode;
+
+	//окно фазового портрета
+	CPhaseDiagWnd* pPhaseDiagWnd;
 
 	afx_msg void OnBnClickedBtnStart();
 	afx_msg void OnBnClickedBtnPause();
@@ -68,6 +73,8 @@ public:
 	afx_msg void OnBnClickedPhasediag();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnEnKillfocusAlpha();
+//	afx_msg void OnDestroy();
+	void DestroyPhaseDiagWnd();
 };
 
 
