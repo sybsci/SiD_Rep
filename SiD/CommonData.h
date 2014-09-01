@@ -19,17 +19,17 @@ struct PlotStruct{
 
 struct CoordParamStruct{
 
-	//края вокруг графика
-	float edgingLeft, edgingRight, edgingBottom, edgingTop;
+	//края вокруг графика в пикселях (!!!)
+	int edgingLeft, edgingRight, edgingBottom, edgingTop;
 
-	//размеры клиентской области в логических единицах измерения
+	//размеры холста графика в логических единицах измерения (не считая отбивки по краям в пикселях)
 	float logSizeX, logSizeY;
 
 	//начало координат в логических единицах измерения
 	float logOriginX, logOriginY;
 
-	//вьюпорт-, виндов-экстенты
-	int xVE, yVE, xWE, yWE;
+	//вьюпорт-экстенты
+	int xVE, yVE;
 
 	//перевод логических единиц в единицы экранные
 	float fPixPerX, fPixPerY;
@@ -42,5 +42,8 @@ struct CoordParamStruct{
 
 	//количество меток по оси Y
 	int nGrades;
+
+	//сама область рисования графика
+	CRect GraphRect;
 
 };

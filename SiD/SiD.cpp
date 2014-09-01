@@ -25,10 +25,14 @@ CSiDApp::CSiDApp()
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 }
 
+CSiDApp::~CSiDApp()
+{
+	Gdiplus::GdiplusShutdown(gdiplusToken);
+}
 
 // The one and only CSiDApp object
 CSiDApp theApp;

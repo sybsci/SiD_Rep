@@ -19,6 +19,8 @@ class CSiDApp : public CWinApp
 {
 public:
 	CSiDApp();
+	~CSiDApp();
+	ULONG_PTR gdiplusToken;
 
 // Overrides
 public:

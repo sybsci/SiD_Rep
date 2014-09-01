@@ -31,12 +31,12 @@ private:
 	CString m_strAlpha;
 
 	//update every nFrameTime ms
-	DWORD nFrameTime;
+	UINT nFrameTime;
 
 	//Статус симуляции: 0 - не запущена, 1 - идет, 2 - была запущена, но приостановлена
 	BOOL m_bSimIsRun;
 
-	void OnTimer(UINT);
+
 
 protected:
 	HICON m_hIcon;
@@ -75,6 +75,8 @@ public:
 	afx_msg void OnEnKillfocusAlpha();
 //	afx_msg void OnDestroy();
 	void DestroyPhaseDiagWnd();
+	void RedrawGraphs();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 

@@ -60,6 +60,7 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 	m_bSimIsRun = 0;
 
 	fTimeStepPerFrame = 0.1;
+	nFrameTime = 50;
 
 	m_fAlphaWPi = 1.1;
 	m_strAlpha = CString("1.1");
@@ -92,6 +93,7 @@ BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_STOP, &CSiDDlg::OnBnClickedBtnStop)
 	ON_BN_CLICKED(IDC_PHASEDIAG, &CSiDDlg::OnBnClickedPhasediag)
 	ON_EN_KILLFOCUS(IDC_ALPHA, &CSiDDlg::OnEnKillfocusAlpha)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -215,8 +217,9 @@ void CSiDDlg::OnBnClickedBtnStart()
 	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(1);
 
 	if (m_bSimIsRun != 1)
-	{			
-		SetTimer(ID_DRAWTIMER, nFrameTime, NULL);
+	{	
+		UINT_PTR pppr = 0;
+		pppr = SetTimer(ID_DRAWTIMER, nFrameTime, NULL);
 		
 		if (0 == m_bSimIsRun)
 			thePierceDiode->Initialize();
@@ -234,19 +237,13 @@ void CSiDDlg::OnBnClickedBtnPause()
 	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(0);
 	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(1);
 
-	m_bSimIsRun = 0;
+	m_bSimIsRun = 2;
 
 	thePierceDiode->SetRunFlag(false);
 
 	eventTimer.SetEvent();
 	KillTimer(ID_DRAWTIMER);
 
-	thePierceDiode->ClearData();
-
-	/*if (m_pPhaseDiagWnd)
-		m_pPhaseDiagWnd->InitializeYAxe();
-
-	RedrawGraphs();*/
 }
 
 
@@ -256,12 +253,20 @@ void CSiDDlg::OnBnClickedBtnStop()
 	GetDlgItem(IDC_BTN_PAUSE)	->EnableWindow(0);
 	GetDlgItem(IDC_BTN_STOP)	->EnableWindow(0);
 
-	m_bSimIsRun = 2;
+	m_bSimIsRun = 0;
 
 	thePierceDiode->SetRunFlag(false);
 
 	eventTimer.SetEvent();
 	KillTimer(ID_DRAWTIMER);
+
+	thePierceDiode->ClearData();
+
+	if (pPhaseDiagWnd)
+		pPhaseDiagWnd->InitializeYAxe();
+
+	RedrawGraphs();
+
 }
 
 
@@ -273,6 +278,7 @@ void CSiDDlg::OnBnClickedPhasediag()
 		{
 			pPhaseDiagWnd = new CPhaseDiagWnd();
 			pPhaseDiagWnd->Create(IDD_PHASEDIAGWND, GetDesktopWindow());
+			pPhaseDiagWnd->MoveWindow(10, 10, 450, 350);
 			pPhaseDiagWnd->ShowWindow(SW_SHOW);
 		}
 	}
@@ -490,14 +496,23 @@ BOOL fnItIsSignificantNumber(TCHAR symbol)
 }
 
 
-void CSiDDlg::OnTimer(UINT)
-{
-	eventTimer.SetEvent();
-}
-
-
 void CSiDDlg::DestroyPhaseDiagWnd()
 {
 	delete pPhaseDiagWnd;
 	pPhaseDiagWnd = 0;
+}
+
+
+void CSiDDlg::RedrawGraphs()
+{
+	if (pPhaseDiagWnd)
+		pPhaseDiagWnd->Invalidate();
+}
+
+
+void CSiDDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	eventTimer.SetEvent();
+
+	CDialogEx::OnTimer(nIDEvent);
 }

@@ -20,7 +20,11 @@
 #include <afxext.h>         // MFC extensions
 
 
+//////////////////////////////////////////////////////////////////
 
+#include <GdiPlus.h>
+
+//////////////////////////////////////////////////////////////////
 
 
 #ifndef _AFX_NO_OLE_SUPPORT
@@ -31,11 +35,6 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
-
-
-
-
-
 
 
 
@@ -51,3 +50,6 @@
 #endif
 
 
+//////////////////////////////////////////////////////////////////
+
+#pragma comment(lib, "GdiPlus.lib")

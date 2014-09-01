@@ -178,7 +178,7 @@ void CPierceDiode::ResumeSimulation(){
 			LeaveCriticalSection(&critS);
 
 
-			//pParentWnd->RedrawGraphs();
+			pParentWnd->RedrawGraphs();
 
 			pParentWnd->eventTimer.ResetEvent();
 
