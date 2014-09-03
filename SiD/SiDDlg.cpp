@@ -72,6 +72,10 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 
 CSiDDlg::~CSiDDlg()
 {
+
+	thePierceDiode->SetRunFlag(false);
+	eventTimer.SetEvent();
+
 	delete thePierceDiode;
 
 	if (pPhaseDiagWnd)
@@ -218,15 +222,16 @@ void CSiDDlg::OnBnClickedBtnStart()
 
 	if (m_bSimIsRun != 1)
 	{	
-		UINT_PTR pppr = 0;
-		pppr = SetTimer(ID_DRAWTIMER, nFrameTime, NULL);
+		SetTimer(ID_DRAWTIMER, nFrameTime, NULL);
 		
 		if (0 == m_bSimIsRun)
 			thePierceDiode->Initialize();
 		thePierceDiode->StartCalcThread();
 		
 		m_bSimIsRun = 1;
-		
+
+		if (pPhaseDiagWnd)
+			pPhaseDiagWnd->SetEnableSaveButton(0);
 	};
 }
 
@@ -243,6 +248,9 @@ void CSiDDlg::OnBnClickedBtnPause()
 
 	eventTimer.SetEvent();
 	KillTimer(ID_DRAWTIMER);
+
+	if (pPhaseDiagWnd)
+		pPhaseDiagWnd->SetEnableSaveButton(1);
 
 }
 
@@ -267,6 +275,9 @@ void CSiDDlg::OnBnClickedBtnStop()
 
 	RedrawGraphs();
 
+	if (pPhaseDiagWnd)
+		pPhaseDiagWnd->SetEnableSaveButton(1);
+
 }
 
 
@@ -279,6 +290,8 @@ void CSiDDlg::OnBnClickedPhasediag()
 			pPhaseDiagWnd = new CPhaseDiagWnd();
 			pPhaseDiagWnd->Create(IDD_PHASEDIAGWND, GetDesktopWindow());
 			pPhaseDiagWnd->MoveWindow(10, 10, 450, 350);
+			if (m_bSimIsRun != 1)
+				pPhaseDiagWnd->SetEnableSaveButton(1);
 			pPhaseDiagWnd->ShowWindow(SW_SHOW);
 		}
 	}
@@ -334,7 +347,7 @@ void CSiDDlg::OnEnKillfocusAlpha()
 	
 	if (m_fAlphaWPi != fbuf){
 		m_fAlphaWPi = fbuf;
-		//thePierceDiode->SetAlpha(m_fAlphaWPi);
+		thePierceDiode->SetAlpha(m_fAlphaWPi);
 	};
 	m_strAlpha = strBuf;
 	SetDlgItemTextW(IDC_ALPHA, (LPCTSTR)m_strAlpha);
@@ -506,7 +519,7 @@ void CSiDDlg::DestroyPhaseDiagWnd()
 void CSiDDlg::RedrawGraphs()
 {
 	if (pPhaseDiagWnd)
-		pPhaseDiagWnd->Invalidate();
+		pPhaseDiagWnd->UpdateGraph();
 }
 
 

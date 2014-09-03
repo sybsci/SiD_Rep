@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonData.h" />
+    <ClInclude Include="GraphControl.h" />
     <ClInclude Include="PhaseDiagWnd.h" />
     <ClInclude Include="PierceDiode.h" />
     <ClInclude Include="Resource.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphControl.cpp" />
     <ClCompile Include="PhaseDiagWnd.cpp" />
     <ClCompile Include="PierceDiode.cpp" />
     <ClCompile Include="SiD.cpp" />

@@ -1,7 +1,8 @@
 #pragma once
 #include "afxwin.h"
-#include <vector>
 #include "CommonData.h"
+
+#include "GraphControl.h"
 
 
 // CPhaseDiagWnd dialog
@@ -18,12 +19,8 @@ public:
 	enum { IDD = IDD_PHASEDIAGWND };
 
 private:
-	double m_fMinVel, m_fMaxVel;
-	int m_nMinVel, m_nMaxVel;
-	std::vector<CString> m_vecYAxe;
-
-	CString fnGetTickLabelText(int);
-	CoordParamStruct GetCoordParams();
+	// контрол, куда рисуется график
+	CGraphControl m_stcGraph;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -33,12 +30,11 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
-	afx_msg void OnPaint();
 	afx_msg void OnClose();
-
-	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-
+	
 	void InitializeYAxe();
+	void UpdateGraph();
+	afx_msg void OnBnClickedBtnSavescreen();
+	void SetEnableSaveButton(BOOL);
 };

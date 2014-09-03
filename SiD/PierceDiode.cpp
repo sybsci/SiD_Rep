@@ -43,6 +43,7 @@ CPierceDiode::~CPierceDiode()
 
 	delete[] vel;
 	delete[] pos;
+
 }
 
 
@@ -224,22 +225,7 @@ UINT fnCalcThread(LPVOID Param)
 }
 
 
-//void CPierceDiode::SetAlpha(double AlphaWithoutPi){
-//
-//	alpha = AlphaWithoutPi * PI;
-//
-//}
-
-
-
-//void CPierceDiode::Test(){
-//
-//	pParentWnd->Test();
-//
-//}
-//
-
-
-
-
-
+void CPierceDiode::SetAlpha(double AlphaWithoutPi)
+{
+	alpha = AlphaWithoutPi * PI;
+}

@@ -38,5 +38,6 @@ public:
 	//void Test();
 	void ClearData();
 
+	void SetAlpha(double AlphaWithoutPi);
 };
 
