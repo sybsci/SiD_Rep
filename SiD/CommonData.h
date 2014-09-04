@@ -2,15 +2,20 @@
 #pragma once
 
 static const int maxParticlesNumber = 100000;
+static const int Ng = 256;
 static const double PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348;
 
 struct PlotStruct{
 
 	double arrPos[maxParticlesNumber];
 	double arrVel[maxParticlesNumber];
+
+	double arrPot[Ng + 1];
+
 	int pNumber;
 
 	double fMaxVel, fMinVel;
+	double fMaxPot, fMinPot;
 
 	double fAlphaWithoutPi;
 
@@ -35,7 +40,7 @@ struct CoordParamStruct{
 	float fPixPerX, fPixPerY;
 
 	//размеры и границы графика
-	float minPos, maxPos, minVel, maxVel;
+	float minPos, maxPos, minVel, maxVel, minPot, maxPot;
 	float PosGridStep, VelGridStep;
 
 	int xMin, xMax, yMin, yMax;

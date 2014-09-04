@@ -32,3 +32,5 @@ public:
 };
 
 extern CSiDApp theApp;
+
+int GetEncoderClsid(const WCHAR*, CLSID*);

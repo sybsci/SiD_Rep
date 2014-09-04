@@ -15,7 +15,6 @@ CPierceDiode::CPierceDiode(CSiDDlg* _pParentWnd)
 {
 	pParentWnd = _pParentWnd;
 
-	Ng = 256;
 	a0 = 0.001;
 
 	alpha = 1.1 * PI;	//by default
@@ -87,6 +86,7 @@ void CPierceDiode::ResumeSimulation(){
 	int ind;
 
 	double fMaxVel, fMinVel;
+	double fMaxPot, fMinPot;
 
 	double sumTimePerFrame = 0.;
 
@@ -160,6 +160,9 @@ void CPierceDiode::ResumeSimulation(){
 			fMaxVel = 0.;
 			fMinVel = 0.;
 
+			fMaxPot = 0.;
+			fMinPot = 0.;
+
 			for (int i = 0; i<Np; ++i){
 
 				PlotData.arrPos[i] = pos[i];
@@ -173,8 +176,23 @@ void CPierceDiode::ResumeSimulation(){
 
 			};
 
+			for (int i = 0; i <= Ng; ++i)
+			{
+				PlotData.arrPot[i] = pot[i];
+
+				if (pot[i] > fMaxPot)
+					fMaxPot = pot[i];
+
+				if (pot[i] < fMinPot)
+					fMinPot = pot[i];
+			};
+
+
 			PlotData.fMaxVel = fMaxVel;
 			PlotData.fMinVel = fMinVel;
+
+			PlotData.fMaxPot = fMaxPot;
+			PlotData.fMinPot = fMinPot;
 
 			LeaveCriticalSection(&critS);
 
@@ -199,12 +217,15 @@ void CPierceDiode::SetRunFlag(bool flag)
 
 void CPierceDiode::ClearData()
 {
-	ZeroMemory(PlotData.arrPos, maxParticlesNumber*sizeof(double));
-	ZeroMemory(PlotData.arrVel, maxParticlesNumber*sizeof(double));
+	ZeroMemory(PlotData.arrPos, maxParticlesNumber * sizeof(double));
+	ZeroMemory(PlotData.arrVel, maxParticlesNumber * sizeof(double));
+	ZeroMemory(PlotData.arrPot, (Ng + 1) * sizeof(double));
 
 	PlotData.pNumber = 0;
 	PlotData.fMaxVel = 1.f;
 	PlotData.fMinVel = 0.f;
+	PlotData.fMaxPot = 1.f;
+	PlotData.fMinPot = 0.f;
 }
 
 

@@ -45,6 +45,12 @@
     <ClInclude Include="GraphControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PotDiagWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PotGraphControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SiD.cpp">
@@ -63,6 +69,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PotDiagWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PotGraphControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -7,9 +7,9 @@
 #include "SiDDlg.h"
 #include "afxdialogex.h"
 
-//#include "CommonData.h"
 #include "PierceDiode.h"
 #include "PhaseDiagWnd.h"
+#include "PotDiagWnd.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -67,7 +67,8 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 
 	thePierceDiode = new CPierceDiode(this);
 
-	pPhaseDiagWnd = NULL;
+	pPhaseDiagWnd = 0;
+	pPotDiagWnd = 0;
 }
 
 CSiDDlg::~CSiDDlg()
@@ -80,12 +81,16 @@ CSiDDlg::~CSiDDlg()
 
 	if (pPhaseDiagWnd)
 		delete pPhaseDiagWnd;
+
+	if (pPotDiagWnd)
+		delete pPotDiagWnd;
 }
 
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PHASEDIAG, m_chkPhaseDiag);
+	DDX_Control(pDX, IDC_POTDIAG, m_chkPotDiag);
 }
 
 BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
@@ -98,6 +103,7 @@ BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_PHASEDIAG, &CSiDDlg::OnBnClickedPhasediag)
 	ON_EN_KILLFOCUS(IDC_ALPHA, &CSiDDlg::OnEnKillfocusAlpha)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_POTDIAG, &CSiDDlg::OnBnClickedPotdiag)
 END_MESSAGE_MAP()
 
 
@@ -232,6 +238,8 @@ void CSiDDlg::OnBnClickedBtnStart()
 
 		if (pPhaseDiagWnd)
 			pPhaseDiagWnd->SetEnableSaveButton(0);
+		if (pPotDiagWnd)
+			pPotDiagWnd->SetEnableSaveButton(0);
 	};
 }
 
@@ -251,6 +259,8 @@ void CSiDDlg::OnBnClickedBtnPause()
 
 	if (pPhaseDiagWnd)
 		pPhaseDiagWnd->SetEnableSaveButton(1);
+	if (pPotDiagWnd)
+		pPotDiagWnd->SetEnableSaveButton(1);
 
 }
 
@@ -271,13 +281,18 @@ void CSiDDlg::OnBnClickedBtnStop()
 	thePierceDiode->ClearData();
 
 	if (pPhaseDiagWnd)
+	{
 		pPhaseDiagWnd->InitializeYAxe();
+		pPhaseDiagWnd->SetEnableSaveButton(1);
+	};
+
+	if (pPotDiagWnd)
+	{
+		pPotDiagWnd->InitializeYAxe();
+		pPotDiagWnd->SetEnableSaveButton(0);
+	};
 
 	RedrawGraphs();
-
-	if (pPhaseDiagWnd)
-		pPhaseDiagWnd->SetEnableSaveButton(1);
-
 }
 
 
@@ -520,6 +535,9 @@ void CSiDDlg::RedrawGraphs()
 {
 	if (pPhaseDiagWnd)
 		pPhaseDiagWnd->UpdateGraph();
+
+	if (pPotDiagWnd)
+		pPotDiagWnd->UpdateGraph();
 }
 
 
@@ -528,4 +546,36 @@ void CSiDDlg::OnTimer(UINT_PTR nIDEvent)
 	eventTimer.SetEvent();
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CSiDDlg::OnBnClickedPotdiag()
+{
+	if (m_chkPotDiag.GetCheck()){
+		//отобразить окно распределения потенциала
+		if (!pPotDiagWnd)
+		{
+			pPotDiagWnd = new CPotDiagWnd();
+			pPotDiagWnd->Create(IDD_POTDIAGWND, GetDesktopWindow());
+			pPotDiagWnd->MoveWindow(10, 30, 450, 350);
+			if (m_bSimIsRun != 1)
+				pPotDiagWnd->SetEnableSaveButton(1);
+			pPotDiagWnd->ShowWindow(SW_SHOW);
+		}
+	}
+	else{
+		//закрыть окно фазового портрета, если оно открыто
+		if (pPotDiagWnd)
+		{
+			pPotDiagWnd->CloseWindow();
+			DestroyPotDiagWnd();
+		}
+	}
+}
+
+
+void CSiDDlg::DestroyPotDiagWnd()
+{
+	delete pPotDiagWnd;
+	pPotDiagWnd = 0;
 }

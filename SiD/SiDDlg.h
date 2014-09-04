@@ -4,11 +4,13 @@
 
 #pragma once
 #include "afxwin.h"
+#include "PotDiagWnd.h"
 
 #define ID_DRAWTIMER 191
 
 class CPierceDiode;		//объ€влен в PierceDiode.h
 class CPhaseDiagWnd;	//объ€влен в PhaseDiagWnd.h
+class CPotDiagWnd;		//объ€влен в PotDiagWnd.h
 
 
 // CSiDDlg dialog
@@ -62,21 +64,31 @@ public:
 	//главный объект программы
 	CPierceDiode* thePierceDiode;
 
+	// ‘лажок "‘азовый портрет"
+	CButton m_chkPhaseDiag;
+
 	//окно фазового портрета
 	CPhaseDiagWnd* pPhaseDiagWnd;
+
+	// ‘лажок "–аспределение потенциала"
+	CButton m_chkPotDiag;
+
+	//окно распределени€ потенциала
+	CPotDiagWnd* pPotDiagWnd;
 
 	afx_msg void OnBnClickedBtnStart();
 	afx_msg void OnBnClickedBtnPause();
 	afx_msg void OnBnClickedBtnStop();
-	// ‘лажок "‘азовый портрет"
-	CButton m_chkPhaseDiag;
+	
 	afx_msg void OnBnClickedPhasediag();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnEnKillfocusAlpha();
-//	afx_msg void OnDestroy();
 	void DestroyPhaseDiagWnd();
+	void DestroyPotDiagWnd();
 	void RedrawGraphs();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedPotdiag();
+	
 };
 
 

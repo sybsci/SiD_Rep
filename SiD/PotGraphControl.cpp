@@ -1,64 +1,65 @@
-// GraphControl.cpp : implementation file
+// PotGraphControl.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "SiD.h"
-#include "GraphControl.h"
-
+#include "PotGraphControl.h"
 
 
 extern PlotStruct PlotData;
-CRITICAL_SECTION crS;
+CRITICAL_SECTION critSec;
 
-// CGraphControl
+// PotGraphControl
 
-IMPLEMENT_DYNAMIC(CGraphControl, CStatic)
+IMPLEMENT_DYNAMIC(CPotGraphControl, CStatic)
 
-CGraphControl::CGraphControl()
+CPotGraphControl::CPotGraphControl()
 {
-	InitializeCriticalSection(&crS);
+	InitializeCriticalSection(&critSec);
 
 	InitializeYAxe();
 }
 
-CGraphControl::~CGraphControl()
+CPotGraphControl::~CPotGraphControl()
 {
 }
 
 
-BEGIN_MESSAGE_MAP(CGraphControl, CStatic)
+BEGIN_MESSAGE_MAP(CPotGraphControl, CStatic)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
 
-// CGraphControl message handlers
+// PotGraphControl message handlers
 
 
-void CGraphControl::OnPaint()
+
+
+void CPotGraphControl::OnPaint()
 {
-	CPaintDC dc(this);
+	CPaintDC dc(this); 
 
 	/////////////////////////////////////////////////////////////////
 
 	bool bChangeAxe = false;
 
-	if ((PlotData.fMaxVel > m_fMaxVel) || (PlotData.fMinVel < m_fMinVel)) {
+	if ((PlotData.fMaxPot > m_fMaxPot) || (PlotData.fMinPot < m_fMinPot)) {
 		bChangeAxe = true;
 	};
 
 	if (bChangeAxe){
 
-		while (PlotData.fMinVel < m_fMinVel){
-			m_fMinVel -= 0.5;
-			m_nMinVel -= 5;
-			m_vecYAxe.insert(m_vecYAxe.begin(), fnGetTickLabelText(m_nMinVel));
+		while (PlotData.fMinPot < m_fMinPot){
+			m_fMinPot -= 0.5;
+			m_nMinPot -= 5;
+			m_vecYAxe.insert(m_vecYAxe.begin(), fnGetTickLabelText(m_nMinPot));
 		};
 
-		while (PlotData.fMaxVel > m_fMaxVel){
-			m_fMaxVel += 0.5;
-			m_nMaxVel += 5;
-			m_vecYAxe.push_back(fnGetTickLabelText(m_nMaxVel));
+		while (PlotData.fMaxPot > m_fMaxPot){
+			m_fMaxPot += 0.5;
+			m_nMaxPot += 5;
+			m_vecYAxe.push_back(fnGetTickLabelText(m_nMaxPot));
 		};
 
 	};
@@ -66,7 +67,7 @@ void CGraphControl::OnPaint()
 	/////////////////////////////////////////////////////////////////
 
 	CoordParamStruct CPstruct = GetCoordParams();
-	
+
 	int width = CPstruct.xVE;
 	int height = CPstruct.yVE;
 
@@ -77,25 +78,24 @@ void CGraphControl::OnPaint()
 	//////////////////////////////////////////////////////////////////
 	PaintGraph(&memG, &CPstruct);
 	//////////////////////////////////////////////////////////////////
-	
-	g.DrawImage(&memBm, 0, 0, 0, 0, width, height, Gdiplus::UnitPixel);
 
+	g.DrawImage(&memBm, 0, 0, 0, 0, width, height, Gdiplus::UnitPixel);
 }
 
 
-void CGraphControl::InitializeYAxe()
+void CPotGraphControl::InitializeYAxe()
 {
-	m_fMaxVel = 1.0;
-	m_fMinVel = 0.0;
+	m_fMaxPot = 1.0;
+	m_fMinPot = 0.0;
 
-	m_nMaxVel = 10;
-	m_nMinVel = 0;
+	m_nMaxPot = 10;
+	m_nMinPot = 0;
 
 	m_vecYAxe = { _T("0"), _T("0,5"), _T("1") };
 }
 
 
-CString CGraphControl::fnGetTickLabelText(int _val)
+CString CPotGraphControl::fnGetTickLabelText(int _val)
 {
 
 	CString buf(_T(""));
@@ -156,7 +156,7 @@ CString CGraphControl::fnGetTickLabelText(int _val)
 }
 
 
-CoordParamStruct CGraphControl::GetCoordParams()
+CoordParamStruct CPotGraphControl::GetCoordParams()
 {
 	CoordParamStruct CPstruct;
 
@@ -168,10 +168,10 @@ CoordParamStruct CGraphControl::GetCoordParams()
 
 	CPstruct.minPos = 0.;
 	CPstruct.maxPos = 1.;
-	CPstruct.minVel = (float)m_fMinVel;	// -1.5; 
-	CPstruct.maxVel = (float)m_fMaxVel;	// 2.5;
+	CPstruct.minPot = (float)m_fMinPot;	// -1.5; 
+	CPstruct.maxPot = (float)m_fMaxPot;	// 2.5;
 
-	double yLength = m_fMaxVel - m_fMinVel;
+	double yLength = m_fMaxPot - m_fMinPot;
 	CPstruct.nGrades = (int)(yLength / 0.5) + 1;
 	//int nFirst = (int)(m_fMinVel*10.);
 
@@ -182,10 +182,10 @@ CoordParamStruct CGraphControl::GetCoordParams()
 	CPstruct.edgingTop = 30;	// 0.f;
 
 	CPstruct.fPixPerX = (float)(CPstruct.xVE - CPstruct.edgingLeft - CPstruct.edgingRight) / (CPstruct.maxPos - CPstruct.minPos);
-	CPstruct.fPixPerY = (float)(CPstruct.yVE - CPstruct.edgingTop - CPstruct.edgingBottom) / (CPstruct.maxVel - CPstruct.minVel);
+	CPstruct.fPixPerY = (float)(CPstruct.yVE - CPstruct.edgingTop - CPstruct.edgingBottom) / (CPstruct.maxPot - CPstruct.minPot);
 
 	CPstruct.logOriginX = 0.f;
-	CPstruct.logOriginY = (float)m_fMaxVel;
+	CPstruct.logOriginY = (float)m_fMaxPot;
 
 	CPstruct.PosGridStep = 0.25;
 	CPstruct.VelGridStep = 0.5;
@@ -193,7 +193,7 @@ CoordParamStruct CGraphControl::GetCoordParams()
 	CPstruct.xMin = CPstruct.edgingLeft;
 	CPstruct.xMax = CPstruct.edgingLeft + (int)((CPstruct.maxPos - CPstruct.minPos) * CPstruct.fPixPerX);
 
-	CPstruct.yMin = CPstruct.edgingTop + (int)((CPstruct.maxVel - CPstruct.minVel) * CPstruct.fPixPerY);
+	CPstruct.yMin = CPstruct.edgingTop + (int)((CPstruct.maxPot - CPstruct.minPot) * CPstruct.fPixPerY);
 	CPstruct.yMax = CPstruct.edgingTop;
 
 
@@ -201,8 +201,7 @@ CoordParamStruct CGraphControl::GetCoordParams()
 }
 
 
-
-void CGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPstruct)
+void CPotGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPstruct)
 {
 
 	pMemG->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
@@ -255,21 +254,24 @@ void CGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPst
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY), pCPstruct->xMax, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY));
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->yMin, pCPstruct->xMin, pCPstruct->yMax);
 
-	Gdiplus::FontFamily fontFamilyGeorgia(_T("Georgia"));
-	Gdiplus::Font fontItalic(&fontFamilyGeorgia, 24, Gdiplus::FontStyleItalic, Gdiplus::UnitPixel);
+	Gdiplus::FontFamily fontFamilySymbol(_T("Symbol"));
+	Gdiplus::Font fontItalic(&fontFamilySymbol, 24, Gdiplus::FontStyleItalic, Gdiplus::UnitPixel);
 
 	strFormat.SetLineAlignment(Gdiplus::StringAlignmentFar);
 	strFormat.SetAlignment(Gdiplus::StringAlignmentCenter);
 
-	pMemG->DrawString(_T("v"), -1, &fontItalic,
+	pMemG->DrawString(_T("f"), -1, &fontItalic,
 		Gdiplus::RectF((float)pCPstruct->edgingLeft - 20.f, 0.f, 40.f, (float)pCPstruct->edgingTop),
 		&strFormat, &brush);
 
 
+	Gdiplus::FontFamily fontFamilyGeorgia(_T("Georgia"));
+	Gdiplus::Font fontItalicX(&fontFamilyGeorgia, 24, Gdiplus::FontStyleItalic, Gdiplus::UnitPixel);
+
 	strFormat.SetLineAlignment(Gdiplus::StringAlignmentNear);
 	strFormat.SetAlignment(Gdiplus::StringAlignmentNear);
 
-	pMemG->DrawString(_T("x"), -1, &fontItalic,
+	pMemG->DrawString(_T("x"), -1, &fontItalicX,
 		Gdiplus::RectF(pCPstruct->xMax + 20.f, (int)pCPstruct->edgingTop + pCPstruct->logOriginY * pCPstruct->fPixPerY - 15.f, 40.f, 40.f),
 		&strFormat, &brush);
 
@@ -279,18 +281,18 @@ void CGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPst
 
 	//Gdiplus::SolidBrush alphabrush(Gdiplus::Color(30, 80, 80, 80));
 
-	EnterCriticalSection(&crS);
-	for (int i = 0; i<PlotData.pNumber; ++i){
-		if (PlotData.arrPos[i] >= pCPstruct->minPos && PlotData.arrPos[i] <= pCPstruct->maxPos 
-					&& PlotData.arrVel[i] >= pCPstruct->minVel && PlotData.arrVel[i] <= pCPstruct->maxVel){
-			point.x = pCPstruct->xMin + (int)(PlotData.arrPos[i] * pCPstruct->fPixPerX);
-			point.y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.arrVel[i])*pCPstruct->fPixPerY);
+	EnterCriticalSection(&critSec);
+	for (int i = 0; i<Ng; ++i){
+		if (PlotData.arrPot[i] >= pCPstruct->minPot && PlotData.arrPot[i] <= pCPstruct->maxPot){
 
-			//pMemG->FillEllipse(&alphabrush, point.x - 1, point.y - 1 , 5, 5);
-			pMemG->FillEllipse(&brush, point.x, point.y, 3, 3);
+			pMemG->DrawLine(&axePen,
+				pCPstruct->xMin + (int)((float)i / (float)Ng * pCPstruct->fPixPerX),
+				pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.arrPot[i])*pCPstruct->fPixPerY),
+				pCPstruct->xMin + (int)((float)(i+1) / (float)Ng * pCPstruct->fPixPerX),
+				pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.arrPot[i+1])*pCPstruct->fPixPerY));
 
 		};
 	};
-	LeaveCriticalSection(&crS);
+	LeaveCriticalSection(&critSec);
 
 }

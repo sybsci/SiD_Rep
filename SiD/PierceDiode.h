@@ -8,7 +8,7 @@ class CSiDDlg;
 class CPierceDiode
 {
 private:
-	int Ng;
+	
 	double a0;
 
 	int Np, Npc;
