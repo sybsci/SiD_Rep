@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <vector>
+
 static const int maxParticlesNumber = 100000;
 static const int Ng = 256;
 static const double PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348;
@@ -19,6 +21,8 @@ struct PlotStruct{
 
 	double fAlphaWithoutPi;
 
+	unsigned int nDotNumber;
+	std::vector<double> PMap;
 };
 
 

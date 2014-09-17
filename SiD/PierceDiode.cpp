@@ -31,6 +31,9 @@ CPierceDiode::CPierceDiode(CSiDDlg* _pParentWnd)
 
 	PlotData.pNumber = 0;
 	PlotData.fAlphaWithoutPi = 1.1;
+
+	PlotData.nDotNumber = 100;
+	PlotData.PMap = std::vector<double>(PlotData.nDotNumber, 0.);
 }
 
 
@@ -90,6 +93,8 @@ void CPierceDiode::ResumeSimulation(){
 
 	double sumTimePerFrame = 0.;
 
+	double z1 = 0., z2 = 0., z3 = 0.;
+
 	while (bSimIsRun){
 
 		//раздача заряда методом CIC (линейное взвешивание)
@@ -120,9 +125,6 @@ void CPierceDiode::ResumeSimulation(){
 			shift = rel - (double)ind;
 			force = E[ind] * (1. - shift) + shift * E[ind + 1];
 
-			/*if (0 == kk)
-			vel[i] += 0.5 * dt * force;*/
-
 			vel[i] -= dt * force;
 			pos[i] += dt * vel[i];
 
@@ -141,6 +143,20 @@ void CPierceDiode::ResumeSimulation(){
 
 		Np++;
 
+
+		//работа с отображение Пуанкаре
+		z1 = z2;
+		z2 = z3;
+		z3 = pot[Ng / 2];
+
+		if ((z1 < z2) && (z2 > z3))
+		{
+			EnterCriticalSection(&critS);
+				PlotData.PMap.insert(PlotData.PMap.begin(), z2);
+				if (PlotData.PMap.size() > PlotData.nDotNumber)
+					PlotData.PMap.erase(PlotData.PMap.begin() + PlotData.nDotNumber);
+			LeaveCriticalSection(&critS);
+		};
 
 
 		//взаимодействие с окнами
@@ -193,6 +209,7 @@ void CPierceDiode::ResumeSimulation(){
 
 			PlotData.fMaxPot = fMaxPot;
 			PlotData.fMinPot = fMinPot;
+
 
 			LeaveCriticalSection(&critS);
 

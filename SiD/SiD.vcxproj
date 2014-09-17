@@ -103,6 +103,8 @@
     <ClInclude Include="GraphControl.h" />
     <ClInclude Include="PhaseDiagWnd.h" />
     <ClInclude Include="PierceDiode.h" />
+    <ClInclude Include="PoincareMap.h" />
+    <ClInclude Include="PoincareMapControl.h" />
     <ClInclude Include="PotDiagWnd.h" />
     <ClInclude Include="PotGraphControl.h" />
     <ClInclude Include="Resource.h" />
@@ -115,6 +117,8 @@
     <ClCompile Include="GraphControl.cpp" />
     <ClCompile Include="PhaseDiagWnd.cpp" />
     <ClCompile Include="PierceDiode.cpp" />
+    <ClCompile Include="PoincareMap.cpp" />
+    <ClCompile Include="PoincareMapControl.cpp" />
     <ClCompile Include="PotDiagWnd.cpp" />
     <ClCompile Include="PotGraphControl.cpp" />
     <ClCompile Include="SiD.cpp" />

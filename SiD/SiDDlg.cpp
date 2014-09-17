@@ -10,6 +10,7 @@
 #include "PierceDiode.h"
 #include "PhaseDiagWnd.h"
 #include "PotDiagWnd.h"
+#include "PoincareMap.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -69,14 +70,11 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 
 	pPhaseDiagWnd = 0;
 	pPotDiagWnd = 0;
+	pPMapDiagWnd = 0;
 }
 
 CSiDDlg::~CSiDDlg()
 {
-
-	thePierceDiode->SetRunFlag(false);
-	eventTimer.SetEvent();
-
 	delete thePierceDiode;
 
 	if (pPhaseDiagWnd)
@@ -84,6 +82,9 @@ CSiDDlg::~CSiDDlg()
 
 	if (pPotDiagWnd)
 		delete pPotDiagWnd;
+
+	if (pPMapDiagWnd)
+		delete pPMapDiagWnd;
 }
 
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
@@ -91,6 +92,7 @@ void CSiDDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PHASEDIAG, m_chkPhaseDiag);
 	DDX_Control(pDX, IDC_POTDIAG, m_chkPotDiag);
+	DDX_Control(pDX, IDC_PMAP, m_chkPMap);
 }
 
 BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
@@ -104,6 +106,8 @@ BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_EN_KILLFOCUS(IDC_ALPHA, &CSiDDlg::OnEnKillfocusAlpha)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_POTDIAG, &CSiDDlg::OnBnClickedPotdiag)
+	ON_BN_CLICKED(IDC_PMAP, &CSiDDlg::OnBnClickedPmap)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -291,6 +295,9 @@ void CSiDDlg::OnBnClickedBtnStop()
 		pPotDiagWnd->InitializeYAxe();
 		pPotDiagWnd->SetEnableSaveButton(0);
 	};
+
+	if (pPMapDiagWnd)
+		pPMapDiagWnd->InitializeYAxe();
 
 	RedrawGraphs();
 }
@@ -538,6 +545,9 @@ void CSiDDlg::RedrawGraphs()
 
 	if (pPotDiagWnd)
 		pPotDiagWnd->UpdateGraph();
+
+	if (pPMapDiagWnd)
+		pPMapDiagWnd->UpdateGraph();
 }
 
 
@@ -578,4 +588,44 @@ void CSiDDlg::DestroyPotDiagWnd()
 {
 	delete pPotDiagWnd;
 	pPotDiagWnd = 0;
+}
+
+
+void CSiDDlg::DestroyPMapDiagWnd()
+{
+	delete pPMapDiagWnd;
+	pPMapDiagWnd = 0;
+}
+
+void CSiDDlg::OnBnClickedPmap()
+{
+	if (m_chkPMap.GetCheck()){
+		//отобразить окно фазового портрета
+		if (!pPMapDiagWnd)
+		{
+			pPMapDiagWnd = new CPoincareMap();
+			pPMapDiagWnd->Create(IDD_POINCAREMAP, GetDesktopWindow());
+			pPMapDiagWnd->MoveWindow(10, 50, 450, 350);
+			/*if (m_bSimIsRun != 1)
+				pPhaseDiagWnd->SetEnableSaveButton(1);*/
+			pPMapDiagWnd->ShowWindow(SW_SHOW);
+		}
+	}
+	else{
+		//закрыть окно фазового портрета, если оно открыто
+		if (pPMapDiagWnd)
+		{
+			pPMapDiagWnd->CloseWindow();
+			DestroyPMapDiagWnd();
+		}
+	}
+}
+
+
+void CSiDDlg::OnClose()
+{
+	thePierceDiode->SetRunFlag(false);
+	eventTimer.SetEvent();
+
+	CDialogEx::OnClose();
 }

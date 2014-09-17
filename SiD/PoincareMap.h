@@ -2,39 +2,38 @@
 #include "afxwin.h"
 #include "CommonData.h"
 
-#include "GraphControl.h"
+#include "PoincareMapControl.h"
 
+// CPoincareMap dialog
 
-// CPhaseDiagWnd dialog
-
-class CPhaseDiagWnd : public CDialogEx
+class CPoincareMap : public CDialogEx
 {
-	DECLARE_DYNAMIC(CPhaseDiagWnd)
+	DECLARE_DYNAMIC(CPoincareMap)
 
 public:
-	CPhaseDiagWnd(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CPhaseDiagWnd();
+	CPoincareMap(CWnd* pParent = NULL);   // standard constructor
+	virtual ~CPoincareMap();
 
 // Dialog Data
-	enum { IDD = IDD_PHASEDIAGWND };
+	enum { IDD = IDD_POINCAREMAP };
 
 private:
-	// контрол, куда рисуется график
-	CGraphControl m_stcGraph;
+	CPoincareMapControl m_stcGraph;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	HICON m_hIcon;
 
 	DECLARE_MESSAGE_MAP()
+
 public:
 	virtual BOOL OnInitDialog();
-	virtual void OnOK();
 	afx_msg void OnClose();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnBnClickedBtnSavescreen();
+	virtual void OnOK();
 
 	void InitializeYAxe();
 	void UpdateGraph();
 	void SetEnableSaveButton(BOOL);
+
 };

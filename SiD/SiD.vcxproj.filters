@@ -51,6 +51,12 @@
     <ClInclude Include="PotGraphControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PoincareMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PoincareMapControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SiD.cpp">
@@ -75,6 +81,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PotGraphControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PoincareMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PoincareMapControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

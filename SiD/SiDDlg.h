@@ -11,6 +11,7 @@
 class CPierceDiode;		//объ€влен в PierceDiode.h
 class CPhaseDiagWnd;	//объ€влен в PhaseDiagWnd.h
 class CPotDiagWnd;		//объ€влен в PotDiagWnd.h
+class CPoincareMap;		//объ€влен в PotDiagWnd.h
 
 
 // CSiDDlg dialog
@@ -76,6 +77,8 @@ public:
 	//окно распределени€ потенциала
 	CPotDiagWnd* pPotDiagWnd;
 
+	CPoincareMap* pPMapDiagWnd;
+
 	afx_msg void OnBnClickedBtnStart();
 	afx_msg void OnBnClickedBtnPause();
 	afx_msg void OnBnClickedBtnStop();
@@ -85,10 +88,14 @@ public:
 	afx_msg void OnEnKillfocusAlpha();
 	void DestroyPhaseDiagWnd();
 	void DestroyPotDiagWnd();
+	void DestroyPMapDiagWnd();
 	void RedrawGraphs();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPotdiag();
 	
+	CButton m_chkPMap;
+	afx_msg void OnBnClickedPmap();
+	afx_msg void OnClose();
 };
 
 
