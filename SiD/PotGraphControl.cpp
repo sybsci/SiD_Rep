@@ -179,7 +179,7 @@ CoordParamStruct CPotGraphControl::GetCoordParams()
 	CPstruct.edgingLeft = 40;	// 0.1f;
 	CPstruct.edgingRight = 50;	// 0.1f;
 	CPstruct.edgingBottom = 30;	// 0.2f;
-	CPstruct.edgingTop = 30;	// 0.f;
+	CPstruct.edgingTop = 42;	// 0.f;
 
 	CPstruct.fPixPerX = (float)(CPstruct.xVE - CPstruct.edgingLeft - CPstruct.edgingRight) / (CPstruct.maxPos - CPstruct.minPos);
 	CPstruct.fPixPerY = (float)(CPstruct.yVE - CPstruct.edgingTop - CPstruct.edgingBottom) / (CPstruct.maxPot - CPstruct.minPot);
@@ -254,15 +254,17 @@ void CPotGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pC
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY), pCPstruct->xMax, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY));
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->yMin, pCPstruct->xMin, pCPstruct->yMax);
 
-	Gdiplus::FontFamily fontFamilySymbol(_T("Symbol"));
+	/*Gdiplus::FontFamily fontFamilySymbol(_T("Symbol"));
 	Gdiplus::Font fontItalic(&fontFamilySymbol, 24, Gdiplus::FontStyleItalic, Gdiplus::UnitPixel);
 
 	strFormat.SetLineAlignment(Gdiplus::StringAlignmentFar);
-	strFormat.SetAlignment(Gdiplus::StringAlignmentCenter);
+	strFormat.SetAlignment(Gdiplus::StringAlignmentCenter);*/
 
-	pMemG->DrawString(_T("f"), -1, &fontItalic,
+	/*pMemG->DrawString(_T("f"), -1, &fontItalic,
 		Gdiplus::RectF((float)pCPstruct->edgingLeft - 20.f, 0.f, 40.f, (float)pCPstruct->edgingTop),
-		&strFormat, &brush);
+		&strFormat, &brush);*/
+	Gdiplus::Bitmap bmpPhi(theApp.m_hInstance, MAKEINTRESOURCE(IDB_PHI));
+	pMemG->DrawImage(&bmpPhi, 35, 10);
 
 
 	Gdiplus::FontFamily fontFamilyGeorgia(_T("Georgia"));
@@ -282,7 +284,7 @@ void CPotGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pC
 	//Gdiplus::SolidBrush alphabrush(Gdiplus::Color(30, 80, 80, 80));
 
 	EnterCriticalSection(&critSec);
-	for (int i = 0; i<Ng; ++i){
+	for (int i = 0; i <= Ng; ++i){
 		if (PlotData.arrPot[i] >= pCPstruct->minPot && PlotData.arrPot[i] <= pCPstruct->maxPot){
 
 			pMemG->DrawLine(&axePen,
@@ -295,4 +297,14 @@ void CPotGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pC
 	};
 	LeaveCriticalSection(&critSec);
 
+}
+
+void CPotGraphControl::GetPotArray(double* arr)
+{
+	EnterCriticalSection(&critSec);
+
+	for (int i = 0; i <= Ng; ++i)
+		arr[i] = PlotData.arrPot[i];
+
+	LeaveCriticalSection(&critSec);
 }

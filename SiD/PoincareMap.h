@@ -36,4 +36,6 @@ public:
 	void UpdateGraph();
 	void SetEnableSaveButton(BOOL);
 
+	afx_msg void OnBnClickedBtnSavepmapscreen();
+	afx_msg void OnBnClickedBtnSavepmaptxt();
 };

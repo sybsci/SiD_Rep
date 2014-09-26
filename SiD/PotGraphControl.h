@@ -28,6 +28,7 @@ public:
 	CoordParamStruct GetCoordParams();
 
 	afx_msg void OnPaint();
+	void GetPotArray(double* arr);
 };
 
 

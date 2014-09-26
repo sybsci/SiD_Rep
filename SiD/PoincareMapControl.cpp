@@ -96,7 +96,7 @@ CoordParamStruct CPoincareMapControl::GetCoordParams()
 	CPstruct.edgingLeft = 40;	// 0.1f;
 	CPstruct.edgingRight = 50;	// 0.1f;
 	CPstruct.edgingBottom = 30;	// 0.2f;
-	CPstruct.edgingTop = 30;	// 0.f;
+	CPstruct.edgingTop = 45;	// 0.f;
 
 	CPstruct.fPixPerX = (float)(CPstruct.xVE - CPstruct.edgingLeft - CPstruct.edgingRight) / (CPstruct.maxPos - CPstruct.minPos);
 	CPstruct.fPixPerY = (float)(CPstruct.yVE - CPstruct.edgingTop - CPstruct.edgingBottom) / (CPstruct.maxPot - CPstruct.minPot);
@@ -178,26 +178,13 @@ void CPoincareMapControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct*
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY), pCPstruct->xMax, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY));
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->yMin, pCPstruct->xMin, pCPstruct->yMax);
 
-	Gdiplus::FontFamily fontFamilySymbol(_T("Symbol"));
-	Gdiplus::Font fontItalic(&fontFamilySymbol, 24, Gdiplus::FontStyleItalic, Gdiplus::UnitPixel);
 
-	strFormat.SetLineAlignment(Gdiplus::StringAlignmentFar);
-	strFormat.SetAlignment(Gdiplus::StringAlignmentCenter);
+	Gdiplus::Bitmap bmpPhiNPO(theApp.m_hInstance, MAKEINTRESOURCE(IDB_PHINPO));
+	pMemG->DrawImage(&bmpPhiNPO, 25, 10);
 
-	pMemG->DrawString(_T("f"), -1, &fontItalic,
-		Gdiplus::RectF((float)pCPstruct->edgingLeft - 20.f, 0.f, 40.f, (float)pCPstruct->edgingTop),
-		&strFormat, &brush);
+	Gdiplus::Bitmap bmpPhiN(theApp.m_hInstance, MAKEINTRESOURCE(IDB_PHIN));
+	pMemG->DrawImage(&bmpPhiN, pCPstruct->xMax + 20, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY) - 8);
 
-
-	/*Gdiplus::FontFamily fontFamilyGeorgia(_T("Georgia"));
-	Gdiplus::Font fontItalicX(&fontFamilyGeorgia, 24, Gdiplus::FontStyleItalic, Gdiplus::UnitPixel);*/
-
-	strFormat.SetLineAlignment(Gdiplus::StringAlignmentNear);
-	strFormat.SetAlignment(Gdiplus::StringAlignmentNear);
-
-	pMemG->DrawString(_T("f"), -1, &fontItalic,
-		Gdiplus::RectF(pCPstruct->xMax + 25.f, (int)pCPstruct->edgingTop + pCPstruct->logOriginY * pCPstruct->fPixPerY - 15.f, 40.f, 40.f),
-		&strFormat, &brush);
 
 	pen.SetColor(Gdiplus::Color(0, 0, 0));
 	CPoint point;
@@ -208,7 +195,7 @@ void CPoincareMapControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct*
 	{
 		if (PlotData.PMap[i] <= pCPstruct->maxPot && PlotData.PMap[i] >= pCPstruct->minPot)
 		{
-			point.x = pCPstruct->xMin + (int)(PlotData.PMap[i] * pCPstruct->fPixPerX);
+			point.x = pCPstruct->xMin + (int)(PlotData.PMap[i] * pCPstruct->fPixPerX) - 1;
 			point.y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.PMap[i-1])*pCPstruct->fPixPerY) - 3;
 			pMemG->FillEllipse(&brush, point.x, point.y, 4, 4);
 		};
@@ -287,4 +274,23 @@ CString CPoincareMapControl::fnGetTickLabelText(int _val)
 	};
 
 	return buf;
+}
+
+
+std::vector<double> CPoincareMapControl::GetPMapArray()
+{
+	std::vector<double> pmap;
+	CoordParamStruct CPstruct = GetCoordParams();
+
+	EnterCriticalSection(&critSect);
+	
+	for (unsigned int i = 0; i < PlotData.nDotNumber; ++i)
+	{
+		if (PlotData.PMap[i] <= CPstruct.maxPot && PlotData.PMap[i] > CPstruct.minPot)
+			pmap.push_back(PlotData.PMap[i]);
+	};
+
+	LeaveCriticalSection(&critSect);
+
+	return pmap;
 }

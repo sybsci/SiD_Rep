@@ -244,6 +244,8 @@ void CSiDDlg::OnBnClickedBtnStart()
 			pPhaseDiagWnd->SetEnableSaveButton(0);
 		if (pPotDiagWnd)
 			pPotDiagWnd->SetEnableSaveButton(0);
+		if (pPMapDiagWnd)
+			pPMapDiagWnd->SetEnableSaveButton(0);
 	};
 }
 
@@ -265,6 +267,8 @@ void CSiDDlg::OnBnClickedBtnPause()
 		pPhaseDiagWnd->SetEnableSaveButton(1);
 	if (pPotDiagWnd)
 		pPotDiagWnd->SetEnableSaveButton(1);
+	if (pPMapDiagWnd)
+		pPMapDiagWnd->SetEnableSaveButton(1);
 
 }
 
@@ -293,11 +297,14 @@ void CSiDDlg::OnBnClickedBtnStop()
 	if (pPotDiagWnd)
 	{
 		pPotDiagWnd->InitializeYAxe();
-		pPotDiagWnd->SetEnableSaveButton(0);
+		pPotDiagWnd->SetEnableSaveButton(1);
 	};
 
 	if (pPMapDiagWnd)
+	{
 		pPMapDiagWnd->InitializeYAxe();
+		pPMapDiagWnd->SetEnableSaveButton(1);
+	};
 
 	RedrawGraphs();
 }
@@ -605,9 +612,9 @@ void CSiDDlg::OnBnClickedPmap()
 		{
 			pPMapDiagWnd = new CPoincareMap();
 			pPMapDiagWnd->Create(IDD_POINCAREMAP, GetDesktopWindow());
-			pPMapDiagWnd->MoveWindow(10, 50, 450, 350);
-			/*if (m_bSimIsRun != 1)
-				pPhaseDiagWnd->SetEnableSaveButton(1);*/
+			pPMapDiagWnd->MoveWindow(10, 50, 350, 350);
+			if (m_bSimIsRun != 1)
+				pPMapDiagWnd->SetEnableSaveButton(1);
 			pPMapDiagWnd->ShowWindow(SW_SHOW);
 		}
 	}

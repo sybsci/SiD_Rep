@@ -35,4 +35,5 @@ public:
 	virtual void OnOK();
 	void InitializeYAxe();
 	void UpdateGraph();
+	afx_msg void OnBnClickedBtnSavetxtdata();
 };

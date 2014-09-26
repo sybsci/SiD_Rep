@@ -30,6 +30,7 @@ public:
 	afx_msg void OnPaint();
 
 	void InitializeAxes();
+	std::vector<double> GetPMapArray();
 };
 
 

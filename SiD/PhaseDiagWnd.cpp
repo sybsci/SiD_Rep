@@ -35,6 +35,7 @@ BEGIN_MESSAGE_MAP(CPhaseDiagWnd, CDialogEx)
 	ON_WM_CLOSE()
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_BTN_SAVESCREEN, &CPhaseDiagWnd::OnBnClickedBtnSavescreen)
+	ON_BN_CLICKED(IDC_BTN_SAVETXTPHASEDIAG, &CPhaseDiagWnd::OnBnClickedBtnSavetxtphasediag)
 END_MESSAGE_MAP()
 
 
@@ -51,6 +52,10 @@ BOOL CPhaseDiagWnd::OnInitDialog()
 
 	CButton *pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVESCREEN);
 	HANDLE hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_SAVESCREEN), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
+	pBtn->SetIcon((HICON)hBtnIcon);
+
+	pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVETXTPHASEDIAG);
+	hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_SAVETXTDATA), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
 	pBtn->SetIcon((HICON)hBtnIcon);
 
 	return TRUE;
@@ -161,4 +166,33 @@ void CPhaseDiagWnd::OnBnClickedBtnSavescreen()
 void CPhaseDiagWnd::SetEnableSaveButton(BOOL set)
 {
 	GetDlgItem(IDC_BTN_SAVESCREEN)->EnableWindow(set);
+	GetDlgItem(IDC_BTN_SAVETXTPHASEDIAG)->EnableWindow(set);
+}
+
+
+void CPhaseDiagWnd::OnBnClickedBtnSavetxtphasediag()
+{
+	CFileDialog dialog(FALSE,
+		CString(_T("txt")),
+		CString(_T("Фазовый портрет")),
+		6UL,
+		_T("txt (*.txt)|*.txt|All Files (*.*)|*.*||"),
+		this);
+
+	if (dialog.DoModal() == IDOK)
+	{
+		errno_t err;
+		FILE *pFile;
+		err = _wfopen_s(&pFile, (LPCTSTR)dialog.m_ofn.lpstrFile, _T("w"));
+		if (0 == err)
+		{
+			m_stcGraph.PrintFile(pFile);
+		}
+		else
+		{
+			AfxMessageBox(_T("Ошибка при открытии файла"));
+		};
+
+		fclose(pFile);
+	};
 }

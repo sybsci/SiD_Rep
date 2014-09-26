@@ -136,6 +136,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\PauseIcon.ico" />
+    <Image Include="res\phi.bmp" />
+    <Image Include="res\phin.bmp" />
+    <Image Include="res\phinpo.bmp" />
+    <Image Include="res\SaveDataIcon.ico" />
     <Image Include="res\SavePicIcon.ico" />
     <Image Include="res\SiD.ico" />
     <Image Include="res\StartIcon.ico" />

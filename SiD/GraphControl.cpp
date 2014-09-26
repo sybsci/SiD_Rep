@@ -294,3 +294,22 @@ void CGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPst
 	LeaveCriticalSection(&crS);
 
 }
+
+
+void CGraphControl::PrintFile(FILE* pFile)
+{
+	CoordParamStruct CPstruct = GetCoordParams();
+
+	fprintf_s(pFile, "x\tv\n");
+
+	EnterCriticalSection(&crS);
+	for (int i = 0; i<PlotData.pNumber; ++i)
+	{
+		if (PlotData.arrPos[i] >= CPstruct.minPos && PlotData.arrPos[i] <= CPstruct.maxPos
+			&& PlotData.arrVel[i] >= CPstruct.minVel && PlotData.arrVel[i] <= CPstruct.maxVel)
+		{
+			fprintf_s(pFile, "%20.15f\t%20.15f\n", PlotData.arrPos[i], PlotData.arrVel[i]);
+		};
+	};
+	LeaveCriticalSection(&crS);
+}

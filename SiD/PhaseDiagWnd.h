@@ -37,4 +37,5 @@ public:
 	void InitializeYAxe();
 	void UpdateGraph();
 	void SetEnableSaveButton(BOOL);
+	afx_msg void OnBnClickedBtnSavetxtphasediag();
 };

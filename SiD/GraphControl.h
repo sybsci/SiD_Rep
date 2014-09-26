@@ -25,6 +25,7 @@ public:
 	void InitializeYAxe();
 	void PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct*);
 	CoordParamStruct GetCoordParams();
+	void PrintFile(FILE* pFile);
 };
 
 

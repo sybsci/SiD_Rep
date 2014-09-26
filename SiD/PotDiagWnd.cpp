@@ -9,7 +9,6 @@
 #include "SiDDlg.h"
 
 
-
 // CPotDiagWnd dialog
 
 IMPLEMENT_DYNAMIC(CPotDiagWnd, CDialogEx)
@@ -38,6 +37,10 @@ BOOL CPotDiagWnd::OnInitDialog()
 	HANDLE hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_SAVESCREEN), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
 	pBtn->SetIcon((HICON)hBtnIcon);
 
+	pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVETXTDATA);
+	hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_SAVETXTDATA), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
+	pBtn->SetIcon((HICON)hBtnIcon);
+
 	return TRUE;
 }
 
@@ -53,12 +56,14 @@ BEGIN_MESSAGE_MAP(CPotDiagWnd, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_SAVEPOTSCREEN, &CPotDiagWnd::OnBnClickedBtnSavepotscreen)
 	ON_WM_CLOSE()
 	ON_WM_SIZE()
+	ON_BN_CLICKED(IDC_BTN_SAVETXTDATA, &CPotDiagWnd::OnBnClickedBtnSavetxtdata)
 END_MESSAGE_MAP()
 
 
 void CPotDiagWnd::SetEnableSaveButton(BOOL set)
 {
 	GetDlgItem(IDC_BTN_SAVEPOTSCREEN)->EnableWindow(set);
+	GetDlgItem(IDC_BTN_SAVETXTDATA)->EnableWindow(set);
 }
 
 
@@ -163,4 +168,34 @@ void CPotDiagWnd::InitializeYAxe()
 void CPotDiagWnd::UpdateGraph()
 {
 	m_stcGraph.Invalidate();
+}
+
+void CPotDiagWnd::OnBnClickedBtnSavetxtdata()
+{
+	CFileDialog dialog(FALSE,
+		CString(_T("txt")),
+		CString(_T("Распределение потенциала")),
+		6UL,
+		_T("txt (*.txt)|*.txt|All Files (*.*)|*.*||"),
+		this);
+
+	if (dialog.DoModal() == IDOK)
+	{
+		errno_t err;
+		FILE *pFile;
+		double arrPot[Ng + 1];
+		err = _wfopen_s(&pFile, (LPCTSTR)dialog.m_ofn.lpstrFile, _T("w"));
+		if (0 == err)
+		{
+			m_stcGraph.GetPotArray(arrPot);
+			for (int i = 0; i <= Ng; ++i)
+				fprintf_s(pFile, "%20.15f\n", arrPot[i]);
+		}
+		else
+		{
+			AfxMessageBox(_T("Ошибка при открытии файла"));
+		};
+
+		fclose(pFile);
+	};
 }

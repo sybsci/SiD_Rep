@@ -116,5 +116,17 @@
     <Image Include="res\SavePicIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\SaveDataIcon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\phinpo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\phin.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\phi.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
