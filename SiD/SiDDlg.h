@@ -12,6 +12,7 @@ class CPierceDiode;		//объ€влен в PierceDiode.h
 class CPhaseDiagWnd;	//объ€влен в PhaseDiagWnd.h
 class CPotDiagWnd;		//объ€влен в PotDiagWnd.h
 class CPoincareMap;		//объ€влен в PotDiagWnd.h
+class CEFieldDyn;		//объ€влен в EFieldDyn.h
 
 
 // CSiDDlg dialog
@@ -39,7 +40,7 @@ private:
 	//—татус симул€ции: 0 - не запущена, 1 - идет, 2 - была запущена, но приостановлена
 	BOOL m_bSimIsRun;
 
-
+	int m_nE0RedrawCounter, m_nE0RedrawMaxCount;
 
 protected:
 	HICON m_hIcon;
@@ -89,6 +90,7 @@ public:
 	void DestroyPhaseDiagWnd();
 	void DestroyPotDiagWnd();
 	void DestroyPMapDiagWnd();
+	void DestroyEFieldWnd();
 	void RedrawGraphs();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPotdiag();
@@ -96,6 +98,9 @@ public:
 	CButton m_chkPMap;
 	afx_msg void OnBnClickedPmap();
 	afx_msg void OnClose();
+	CButton m_chkEField;
+	CEFieldDyn* pEFieldWnd;
+	afx_msg void OnBnClickedEfield();
 };
 
 

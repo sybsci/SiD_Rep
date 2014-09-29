@@ -4,6 +4,7 @@
 #include "PierceDiode.h"
 #include "SiDDlg.h"
 
+
 PlotStruct PlotData;
 
 UINT fnCalcThread(LPVOID Param);
@@ -16,6 +17,8 @@ CPierceDiode::CPierceDiode(CSiDDlg* _pParentWnd)
 	pParentWnd = _pParentWnd;
 
 	a0 = 0.001;
+
+	nTimeCount = 0;
 
 	alpha = 1.1 * PI;	//by default
 	bSimIsRun = false;
@@ -34,6 +37,14 @@ CPierceDiode::CPierceDiode(CSiDDlg* _pParentWnd)
 
 	PlotData.nDotNumber = 100;
 	PlotData.PMap = std::vector<double>(PlotData.nDotNumber, 0.);
+
+	PlotData.fMaxE0 = 1.0;
+	PlotData.fMinE0 = 0.0;
+
+	DotStruct dotE0;
+	dotE0.time = 0;
+	dotE0.value = 0.;
+	PlotData.E0.push_back(dotE0);
 }
 
 
@@ -45,13 +56,6 @@ CPierceDiode::~CPierceDiode()
 
 	delete[] vel;
 	delete[] pos;
-
-}
-
-
-void CPierceDiode::zerosArr(double* pArr, int numEl){
-	for (int i = 0; i < numEl; ++i)
-		pArr[i] = 0.;
 }
 
 
@@ -87,6 +91,7 @@ void CPierceDiode::ResumeSimulation(){
 
 	double rel, shift, force;
 	int ind;
+	
 
 	double fMaxVel, fMinVel;
 	double fMaxPot, fMinPot;
@@ -94,11 +99,18 @@ void CPierceDiode::ResumeSimulation(){
 	double sumTimePerFrame = 0.;
 
 	double z1 = 0., z2 = 0., z3 = 0.;
+	double E0prev = 0., E0prevprev = 0.;
+
+	DotStruct dotE0, dotE0_Poin;
+
+	size_t denSize = (Ng + 1) * sizeof(double);
 
 	while (bSimIsRun){
 
+		nTimeCount++;
+
 		//раздача заряда методом CIC (линейное взвешивание)
-		zerosArr(den, Ng + 1);
+		ZeroMemory(den, denSize);
 		for (int i = 0; i < Np; ++i){
 			rel = (pos[i] / dx);
 			ind = (int)rel;
@@ -157,6 +169,45 @@ void CPierceDiode::ResumeSimulation(){
 					PlotData.PMap.erase(PlotData.PMap.begin() + PlotData.nDotNumber);
 			LeaveCriticalSection(&critS);
 		};
+
+
+		//работа с напряженностью эл. поля на входном электроде
+		if (nTimeCount % AnalizeEvery == 0)
+		{
+			EnterCriticalSection(&critS);
+
+			dotE0.time = nTimeCount;
+			dotE0.value = E[0];
+			PlotData.E0.insert(PlotData.E0.begin(), dotE0);
+
+			if (PlotData.E0.size() > MaxSizeOfE0)
+				PlotData.E0.erase(PlotData.E0.begin() + MaxSizeOfE0);
+
+			if (E[0] > PlotData.fMaxE0)
+				PlotData.fMaxE0 = E[0];
+
+			if (E[0] < PlotData.fMinE0)
+				PlotData.fMinE0 = E[0];
+
+			LeaveCriticalSection(&critS);
+		};
+
+		if (E0prevprev < E0prev && E0prev > E[0])
+		{
+			EnterCriticalSection(&critS);
+
+			dotE0_Poin.time = nTimeCount - 1;
+			dotE0_Poin.value = E0prev;
+			PlotData.E0_Poin.insert(PlotData.E0_Poin.begin(), dotE0_Poin);
+
+			if (PlotData.E0_Poin.size() > MaxSizeOfE0_Poin)
+				PlotData.E0_Poin.erase(PlotData.E0_Poin.begin() + MaxSizeOfE0_Poin);
+
+			LeaveCriticalSection(&critS);
+		};
+
+		E0prevprev = E0prev;
+		E0prev = E[0];
 
 
 		//взаимодействие с окнами
@@ -243,6 +294,22 @@ void CPierceDiode::ClearData()
 	PlotData.fMinVel = 0.f;
 	PlotData.fMaxPot = 1.f;
 	PlotData.fMinPot = 0.f;
+	PlotData.fMaxE0 = 1.f;
+	PlotData.fMinE0 = 0.f;
+
+	PlotData.E0.clear();
+	PlotData.E0_Poin.clear();
+
+	DotStruct dotE0;
+	dotE0.time = 0;
+	dotE0.value = 0.;
+
+	PlotData.E0.push_back(dotE0);
+	PlotData.E0_Poin.push_back(dotE0);
+
+	PlotData.PMap = std::vector<double>(PlotData.nDotNumber, 0.);
+
+	nTimeCount = 0;
 }
 
 

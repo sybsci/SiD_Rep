@@ -21,7 +21,8 @@ private:
 	double alpha;
 	bool bSimIsRun;
 
-	void zerosArr(double*, int);
+	long long int nTimeCount;
+
 	void PoissonSolve(double*, int, double, double, const double*);
 
 public:
@@ -32,12 +33,9 @@ public:
 
 	void Initialize();
 	void ResumeSimulation();
-	//void SetAlpha(double AlphaWithoutPi);
 	void SetRunFlag(bool flag);
 	void StartCalcThread();
-	//void Test();
 	void ClearData();
-
 	void SetAlpha(double AlphaWithoutPi);
 };
 

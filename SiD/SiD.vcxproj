@@ -100,6 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonData.h" />
+    <ClInclude Include="EFieldControl.h" />
+    <ClInclude Include="EFieldDyn.h" />
     <ClInclude Include="GraphControl.h" />
     <ClInclude Include="PhaseDiagWnd.h" />
     <ClInclude Include="PierceDiode.h" />
@@ -114,6 +116,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EFieldControl.cpp" />
+    <ClCompile Include="EFieldDyn.cpp" />
     <ClCompile Include="GraphControl.cpp" />
     <ClCompile Include="PhaseDiagWnd.cpp" />
     <ClCompile Include="PierceDiode.cpp" />
@@ -135,6 +139,7 @@
     <None Include="res\SiD.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\E0.bmp" />
     <Image Include="res\PauseIcon.ico" />
     <Image Include="res\phi.bmp" />
     <Image Include="res\phin.bmp" />

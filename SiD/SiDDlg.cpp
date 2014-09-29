@@ -11,6 +11,7 @@
 #include "PhaseDiagWnd.h"
 #include "PotDiagWnd.h"
 #include "PoincareMap.h"
+#include "EFieldDyn.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,6 +61,9 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 
 	m_bSimIsRun = 0;
 
+	m_nE0RedrawCounter = 0;
+	m_nE0RedrawMaxCount = 5;
+
 	fTimeStepPerFrame = 0.1;
 	nFrameTime = 50;
 
@@ -71,6 +75,7 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 	pPhaseDiagWnd = 0;
 	pPotDiagWnd = 0;
 	pPMapDiagWnd = 0;
+	pEFieldWnd = 0;
 }
 
 CSiDDlg::~CSiDDlg()
@@ -85,6 +90,9 @@ CSiDDlg::~CSiDDlg()
 
 	if (pPMapDiagWnd)
 		delete pPMapDiagWnd;
+
+	if (pEFieldWnd)
+		delete pEFieldWnd;
 }
 
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
@@ -93,6 +101,7 @@ void CSiDDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PHASEDIAG, m_chkPhaseDiag);
 	DDX_Control(pDX, IDC_POTDIAG, m_chkPotDiag);
 	DDX_Control(pDX, IDC_PMAP, m_chkPMap);
+	DDX_Control(pDX, IDC_EFIELD, m_chkEField);
 }
 
 BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
@@ -108,6 +117,7 @@ BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_POTDIAG, &CSiDDlg::OnBnClickedPotdiag)
 	ON_BN_CLICKED(IDC_PMAP, &CSiDDlg::OnBnClickedPmap)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_EFIELD, &CSiDDlg::OnBnClickedEfield)
 END_MESSAGE_MAP()
 
 
@@ -246,6 +256,8 @@ void CSiDDlg::OnBnClickedBtnStart()
 			pPotDiagWnd->SetEnableSaveButton(0);
 		if (pPMapDiagWnd)
 			pPMapDiagWnd->SetEnableSaveButton(0);
+		if (pEFieldWnd)
+			pEFieldWnd->SetEnableSaveButton(0);
 	};
 }
 
@@ -269,6 +281,8 @@ void CSiDDlg::OnBnClickedBtnPause()
 		pPotDiagWnd->SetEnableSaveButton(1);
 	if (pPMapDiagWnd)
 		pPMapDiagWnd->SetEnableSaveButton(1);
+	if (pEFieldWnd)
+		pEFieldWnd->SetEnableSaveButton(1);
 
 }
 
@@ -306,6 +320,13 @@ void CSiDDlg::OnBnClickedBtnStop()
 		pPMapDiagWnd->SetEnableSaveButton(1);
 	};
 
+	if (pEFieldWnd)
+	{
+		pEFieldWnd->InitializeYAxe();
+		pEFieldWnd->SetEnableSaveButton(1);
+	};
+
+	m_nE0RedrawCounter = m_nE0RedrawMaxCount - 1;
 	RedrawGraphs();
 }
 
@@ -555,6 +576,14 @@ void CSiDDlg::RedrawGraphs()
 
 	if (pPMapDiagWnd)
 		pPMapDiagWnd->UpdateGraph();
+
+	++m_nE0RedrawCounter;
+	if (m_nE0RedrawCounter == m_nE0RedrawMaxCount)
+	{
+		m_nE0RedrawCounter = 0;
+		if (pEFieldWnd)
+			pEFieldWnd->UpdateGraph();
+	};
 }
 
 
@@ -635,4 +664,35 @@ void CSiDDlg::OnClose()
 	eventTimer.SetEvent();
 
 	CDialogEx::OnClose();
+}
+
+
+void CSiDDlg::DestroyEFieldWnd()
+{
+	delete pEFieldWnd;
+	pEFieldWnd = 0;
+}
+
+void CSiDDlg::OnBnClickedEfield()
+{
+	if (m_chkEField.GetCheck()){
+		//отобразить окно графика эл. поля
+		if (!pEFieldWnd)
+		{
+			pEFieldWnd = new CEFieldDyn();
+			pEFieldWnd->Create(IDD_EFIELDDYN, GetDesktopWindow());
+			pEFieldWnd->MoveWindow(10, 50, 550, 350);
+			if (m_bSimIsRun != 1)
+				pEFieldWnd->SetEnableSaveButton(1);
+			pEFieldWnd->ShowWindow(SW_SHOW);
+		}
+	}
+	else{
+		//закрыть окно графика эл. поля, если оно открыто
+		if (pEFieldWnd)
+		{
+			pEFieldWnd->CloseWindow();
+			DestroyEFieldWnd();
+		}
+	}
 }

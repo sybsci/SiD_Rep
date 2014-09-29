@@ -243,11 +243,15 @@ void CGraphControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPst
 			&strFormat, &brush);
 	};
 
+	strFormat.SetAlignment(Gdiplus::StringAlignmentCenter);
+
 	//сетка и подписи по x
 	for (int i = 1; i<5; ++i){
 		x = pCPstruct->edgingLeft + (int)((float)i * pCPstruct->PosGridStep * pCPstruct->fPixPerX);
 		pMemG->DrawLine(&pen, x, pCPstruct->yMin, x, pCPstruct->yMax);
-		pMemG->DrawString(xMark[i], -1, &font, Gdiplus::PointF((float)(x + 4), (float)pCPstruct->edgingTop + pCPstruct->logOriginY * pCPstruct->fPixPerY + 4.f), &brush);
+		pMemG->DrawString(xMark[i], -1, &font, 
+			Gdiplus::RectF((float)(x - 20.f), (float)pCPstruct->edgingTop + pCPstruct->logOriginY * pCPstruct->fPixPerY + 8.f, 40.f, 16.f),
+			&strFormat, &brush);
 	};
 
 
