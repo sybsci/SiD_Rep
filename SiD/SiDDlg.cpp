@@ -12,6 +12,7 @@
 #include "PotDiagWnd.h"
 #include "PoincareMap.h"
 #include "EFieldDyn.h"
+#include "MiddlePot.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -76,6 +77,7 @@ CSiDDlg::CSiDDlg(CWnd* pParent /*=NULL*/)
 	pPotDiagWnd = 0;
 	pPMapDiagWnd = 0;
 	pEFieldWnd = 0;
+	pMiddlePotWnd = 0;
 }
 
 CSiDDlg::~CSiDDlg()
@@ -93,6 +95,9 @@ CSiDDlg::~CSiDDlg()
 
 	if (pEFieldWnd)
 		delete pEFieldWnd;
+
+	if (pMiddlePotWnd)
+		delete pMiddlePotWnd;
 }
 
 void CSiDDlg::DoDataExchange(CDataExchange* pDX)
@@ -102,6 +107,7 @@ void CSiDDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_POTDIAG, m_chkPotDiag);
 	DDX_Control(pDX, IDC_PMAP, m_chkPMap);
 	DDX_Control(pDX, IDC_EFIELD, m_chkEField);
+	DDX_Control(pDX, IDC_MIDDLEPOT, m_chkMiddlePot);
 }
 
 BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
@@ -118,6 +124,7 @@ BEGIN_MESSAGE_MAP(CSiDDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_PMAP, &CSiDDlg::OnBnClickedPmap)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_EFIELD, &CSiDDlg::OnBnClickedEfield)
+	ON_BN_CLICKED(IDC_MIDDLEPOT, &CSiDDlg::OnBnClickedMiddlepot)
 END_MESSAGE_MAP()
 
 
@@ -258,6 +265,8 @@ void CSiDDlg::OnBnClickedBtnStart()
 			pPMapDiagWnd->SetEnableSaveButton(0);
 		if (pEFieldWnd)
 			pEFieldWnd->SetEnableSaveButton(0);
+		if (pMiddlePotWnd)
+			pMiddlePotWnd->SetEnableSaveButton(0);
 	};
 }
 
@@ -283,7 +292,8 @@ void CSiDDlg::OnBnClickedBtnPause()
 		pPMapDiagWnd->SetEnableSaveButton(1);
 	if (pEFieldWnd)
 		pEFieldWnd->SetEnableSaveButton(1);
-
+	if (pMiddlePotWnd)
+		pMiddlePotWnd->SetEnableSaveButton(1);
 }
 
 
@@ -324,6 +334,12 @@ void CSiDDlg::OnBnClickedBtnStop()
 	{
 		pEFieldWnd->InitializeYAxe();
 		pEFieldWnd->SetEnableSaveButton(1);
+	};
+
+	if (pMiddlePotWnd)
+	{
+		pMiddlePotWnd->InitializeYAxe();
+		pMiddlePotWnd->SetEnableSaveButton(1);
 	};
 
 	m_nE0RedrawCounter = m_nE0RedrawMaxCount - 1;
@@ -548,14 +564,12 @@ BOOL fnCheckNumber(CString* pstrNumber)
 
 BOOL fnItIsSignificantNumber(TCHAR symbol)
 {
-	
 	CString significantAlphabet = _T("123456789");
 	
 	if (significantAlphabet.Find(symbol) > -1)
 		return TRUE;
 	else
 		return FALSE;
-	
 }
 
 
@@ -583,6 +597,8 @@ void CSiDDlg::RedrawGraphs()
 		m_nE0RedrawCounter = 0;
 		if (pEFieldWnd)
 			pEFieldWnd->UpdateGraph();
+		if (pMiddlePotWnd)
+			pMiddlePotWnd->UpdateGraph();
 	};
 }
 
@@ -681,7 +697,7 @@ void CSiDDlg::OnBnClickedEfield()
 		{
 			pEFieldWnd = new CEFieldDyn();
 			pEFieldWnd->Create(IDD_EFIELDDYN, GetDesktopWindow());
-			pEFieldWnd->MoveWindow(10, 50, 550, 350);
+			pEFieldWnd->MoveWindow(10, 70, 550, 350);
 			if (m_bSimIsRun != 1)
 				pEFieldWnd->SetEnableSaveButton(1);
 			pEFieldWnd->ShowWindow(SW_SHOW);
@@ -695,4 +711,34 @@ void CSiDDlg::OnBnClickedEfield()
 			DestroyEFieldWnd();
 		}
 	}
+}
+
+
+void CSiDDlg::OnBnClickedMiddlepot()
+{
+	if (m_chkMiddlePot.GetCheck()){
+		if (!pMiddlePotWnd)
+		{
+			pMiddlePotWnd = new CMiddlePot();
+			pMiddlePotWnd->Create(IDD_MIDDLEPOT, GetDesktopWindow());
+			pMiddlePotWnd->MoveWindow(10, 90, 550, 350);
+			if (m_bSimIsRun != 1)
+				pMiddlePotWnd->SetEnableSaveButton(1);
+			pMiddlePotWnd->ShowWindow(SW_SHOW);
+		}
+	}
+	else{
+		if (pMiddlePotWnd)
+		{
+			pMiddlePotWnd->CloseWindow();
+			DestroyMiddlePotWnd();
+		}
+	}
+}
+
+
+void CSiDDlg::DestroyMiddlePotWnd()
+{
+	delete pMiddlePotWnd;
+	pMiddlePotWnd = 0;
 }

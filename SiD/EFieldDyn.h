@@ -1,6 +1,7 @@
 #pragma once
 #include "CommonData.h"
 #include "EFieldControl.h"
+#include "afxwin.h"
 
 
 
@@ -31,5 +32,8 @@ public:
 	void UpdateGraph();
 	afx_msg void OnClose();
 	virtual BOOL OnInitDialog();
-//	afx_msg void OnPaint();
+	afx_msg void OnBnClickedBtnSaveefield();
+	afx_msg void OnBnClickedBtnSavetxtefield();
+	CButton m_chkPrintE0PMap;
+	afx_msg void OnBnClickedPrinte0pmap();
 };

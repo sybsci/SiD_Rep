@@ -103,6 +103,8 @@
     <ClInclude Include="EFieldControl.h" />
     <ClInclude Include="EFieldDyn.h" />
     <ClInclude Include="GraphControl.h" />
+    <ClInclude Include="MiddlePot.h" />
+    <ClInclude Include="MiddlePotControl.h" />
     <ClInclude Include="PhaseDiagWnd.h" />
     <ClInclude Include="PierceDiode.h" />
     <ClInclude Include="PoincareMap.h" />
@@ -119,6 +121,8 @@
     <ClCompile Include="EFieldControl.cpp" />
     <ClCompile Include="EFieldDyn.cpp" />
     <ClCompile Include="GraphControl.cpp" />
+    <ClCompile Include="MiddlePot.cpp" />
+    <ClCompile Include="MiddlePotControl.cpp" />
     <ClCompile Include="PhaseDiagWnd.cpp" />
     <ClCompile Include="PierceDiode.cpp" />
     <ClCompile Include="PoincareMap.cpp" />

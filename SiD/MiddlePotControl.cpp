@@ -1,51 +1,49 @@
-// EFieldControl.cpp : implementation file
+// MiddlePotControl.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "SiD.h"
-#include "EFieldControl.h"
+#include "MiddlePotControl.h"
 
 extern PlotStruct PlotData;
-CRITICAL_SECTION crSect;
+CRITICAL_SECTION criSect;
 
-// CEFieldControl
+// CMiddlePotControl
 
-IMPLEMENT_DYNAMIC(CEFieldControl, CStatic)
+IMPLEMENT_DYNAMIC(CMiddlePotControl, CStatic)
 
-CEFieldControl::CEFieldControl()
-: m_bPrintPoincare(false)
+CMiddlePotControl::CMiddlePotControl()
 {
-	InitializeCriticalSection(&crSect);
+	m_bPrintPoincare = false;
+		
+	InitializeCriticalSection(&criSect);
 
 	InitializeYAxe();
 }
 
-CEFieldControl::~CEFieldControl()
+CMiddlePotControl::~CMiddlePotControl()
 {
 }
 
 
-BEGIN_MESSAGE_MAP(CEFieldControl, CStatic)
+BEGIN_MESSAGE_MAP(CMiddlePotControl, CStatic)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
-// CEFieldControl message handlers
-
-
-void CEFieldControl::InitializeYAxe()
+void CMiddlePotControl::InitializeYAxe()
 {
-	m_fMaxE = 1.5;
-	m_fMinE = 0.0;
+	m_fMaxPot = 0.5;
+	m_fMinPot = 0.0;
 
-	m_nMaxE = 15;
-	m_nMinE = 0;
+	m_nMaxPot = 5;
+	m_nMinPot = 0;
 
-	m_vecYAxe = { _T("0"), _T("1,5") };
+	m_vecYAxe = { _T("0"), _T("0,5") };
 }
 
 
-CString CEFieldControl::fnGetTickLabelText(int _val)
+CString CMiddlePotControl::fnGetTickLabelText(int _val)
 {
 
 	CString buf(_T(""));
@@ -106,10 +104,10 @@ CString CEFieldControl::fnGetTickLabelText(int _val)
 }
 
 
-void CEFieldControl::OnPaint()
+void CMiddlePotControl::OnPaint()
 {
-	CPaintDC dc(this); 
-
+	CPaintDC dc(this);
+	
 	/////////////////////////////////////////////////////////////////
 
 	bool bChangeAxe = false;
@@ -118,31 +116,33 @@ void CEFieldControl::OnPaint()
 
 	if (m_bPrintPoincare)
 	{
-		fmax = PlotData.fMaxE0_Poin;
-		fmin = PlotData.fMinE0_Poin;
+		fmax = PlotData.fMaxMP_Poin;
+		fmin = PlotData.fMinMP_Poin;	
 	}
 	else
 	{
-		fmax = PlotData.fMaxE0;
-		fmin = PlotData.fMinE0;
+		fmax = PlotData.fMaxMP;
+		fmin = PlotData.fMinMP;	
 	};
 
-	if ((fmax > m_fMaxE) || (fmin < m_fMinE)) {
+	if ((fmax > m_fMaxPot) || (fmin < m_fMinPot)) {
 		bChangeAxe = true;
 	};
 
-	if (bChangeAxe){
-
-		while (fmin < m_fMinE){
-			m_fMinE -= 1.5;
-			m_nMinE -= 15;
-			m_vecYAxe.insert(m_vecYAxe.begin(), fnGetTickLabelText(m_nMinE));
+	if (bChangeAxe)
+	{
+		while (fmin < m_fMinPot)
+		{
+			m_fMinPot -= 0.5;
+			m_nMinPot -= 5;
+			m_vecYAxe.insert(m_vecYAxe.begin(), fnGetTickLabelText(m_nMinPot));
 		};
 
-		while (fmax > m_fMaxE){
-			m_fMaxE += 1.5;
-			m_nMaxE += 15;
-			m_vecYAxe.push_back(fnGetTickLabelText(m_nMaxE));
+		while (fmax > m_fMaxPot)
+		{
+			m_fMaxPot += 0.5;
+			m_nMaxPot += 5;
+			m_vecYAxe.push_back(fnGetTickLabelText(m_nMaxPot));
 		};
 	};
 
@@ -162,11 +162,10 @@ void CEFieldControl::OnPaint()
 	//////////////////////////////////////////////////////////////////
 
 	g.DrawImage(&memBm, 0, 0, 0, 0, width, height, Gdiplus::UnitPixel);
-
 }
 
 
-CoordParamStruct CEFieldControl::GetCoordParams()
+CoordParamStruct CMiddlePotControl::GetCoordParams()
 {
 	CoordParamStruct CPstruct;
 
@@ -178,13 +177,13 @@ CoordParamStruct CEFieldControl::GetCoordParams()
 
 	CPstruct.minPos = 0.;
 	CPstruct.maxPos = 10.;
-	CPstruct.minPot = (float)m_fMinE;
-	CPstruct.maxPot = (float)m_fMaxE;
+	CPstruct.minPot = (float)m_fMinPot;
+	CPstruct.maxPot = (float)m_fMaxPot;
 
 	CPstruct.PosGridStep = 1.0;
-	CPstruct.VelGridStep = 1.5;
+	CPstruct.VelGridStep = 0.5;
 
-	double yLength = m_fMaxE - m_fMinE;
+	double yLength = m_fMaxPot - m_fMinPot;
 	CPstruct.nGrades = (int)(yLength / (double)CPstruct.VelGridStep) + 1;
 
 	//в пикселях постоянную отбивку от края
@@ -197,7 +196,7 @@ CoordParamStruct CEFieldControl::GetCoordParams()
 	CPstruct.fPixPerY = (float)(CPstruct.yVE - CPstruct.edgingTop - CPstruct.edgingBottom) / (CPstruct.maxPot - CPstruct.minPot);
 
 	CPstruct.logOriginX = 0.f;
-	CPstruct.logOriginY = (float)m_fMaxE;
+	CPstruct.logOriginY = (float)m_fMaxPot;
 
 	CPstruct.xMin = CPstruct.edgingLeft;
 	CPstruct.xMax = CPstruct.edgingLeft + (int)((CPstruct.maxPos - CPstruct.minPos) * CPstruct.fPixPerX);
@@ -210,7 +209,7 @@ CoordParamStruct CEFieldControl::GetCoordParams()
 }
 
 
-void CEFieldControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPstruct)
+void CMiddlePotControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPstruct)
 {
 	pMemG->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 	pMemG->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
@@ -262,8 +261,8 @@ void CEFieldControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPs
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY), pCPstruct->xMax, pCPstruct->edgingTop + (int)(pCPstruct->logOriginY * pCPstruct->fPixPerY));
 	pMemG->DrawLine(&axePen, pCPstruct->xMin, pCPstruct->yMin, pCPstruct->xMin, pCPstruct->yMax);
 
-	
-	Gdiplus::Bitmap bmpE0(theApp.m_hInstance, MAKEINTRESOURCE(IDB_E0));
+
+	Gdiplus::Bitmap bmpE0(theApp.m_hInstance, MAKEINTRESOURCE(IDB_PHI));
 	pMemG->DrawImage(&bmpE0, 35, 10);
 
 
@@ -287,76 +286,75 @@ void CEFieldControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct* pCPs
 	axePen.SetWidth(1.f);
 
 
-	EnterCriticalSection(&crSect);
+	EnterCriticalSection(&criSect);
 
 	if (m_bPrintPoincare)
 	{
-		nLastT = PlotData.E0_Poin.at(0).time;
-		nFirstT = nLastT - MaxSizeOfE0 * AnalizeEvery; 
+		nLastT = PlotData.MidPot_Poin.at(0).time;
+		nFirstT = nLastT - MaxSizeOfE0 * AnalizeEvery;
 
-		for (unsigned int i = 1; i < PlotData.E0_Poin.size(); ++i)	// берется пара точек i, i+1
+		for (unsigned int i = 1; i < PlotData.MidPot_Poin.size(); ++i)	// берется пара точек i, i+1
 		{
-			if (PlotData.E0_Poin[i].value <= pCPstruct->maxPot && PlotData.E0_Poin[i].value >= pCPstruct->minPot)
+			if (PlotData.MidPot_Poin[i].value <= pCPstruct->maxPot && PlotData.MidPot_Poin[i].value >= pCPstruct->minPot)
 			{
-
-				if (PlotData.E0_Poin[i].time < nFirstT)
+				if (PlotData.MidPot_Poin[i].time < nFirstT)
 					break;
 
-				point1.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.E0_Poin[i-1].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
-				point1.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.E0_Poin[i - 1].value) * pCPstruct->fPixPerY);
-				point2.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.E0_Poin[i].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
-				point2.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.E0_Poin[i].value) * pCPstruct->fPixPerY);
+				point1.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.MidPot_Poin[i - 1].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
+				point1.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.MidPot_Poin[i - 1].value) * pCPstruct->fPixPerY);
+				point2.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.MidPot_Poin[i].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
+				point2.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.MidPot_Poin[i].value) * pCPstruct->fPixPerY);
 
 				pMemG->DrawLine(&axePen, point1, point2);
 
 				pMemG->FillEllipse(&brush, point2.X - 3, point2.Y - 3, 5, 5);
-
 			};
 		};
 	}
 	else
 	{
-		nLastT = PlotData.E0.at(0).time;
+		nLastT = PlotData.MidPot.at(0).time;
 		nFirstT = nLastT - MaxSizeOfE0 * AnalizeEvery;
 
-		for (unsigned int i = 1; i < PlotData.E0.size(); ++i)	// берется пара точек i, i+1
+		for (unsigned int i = 1; i < PlotData.MidPot.size(); ++i)	// берется пара точек i, i+1
 		{
-			if (PlotData.E0[i].value <= pCPstruct->maxPot && PlotData.E0[i].value >= pCPstruct->minPot)
+			if (PlotData.MidPot[i].value <= pCPstruct->maxPot && PlotData.MidPot[i].value >= pCPstruct->minPot)
 			{
+				
 
-				point1.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.E0[i - 1].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
-				point1.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.E0[i - 1].value) * pCPstruct->fPixPerY);
-				point2.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.E0[i].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
-				point2.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.E0[i].value) * pCPstruct->fPixPerY);
+				point1.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.MidPot[i - 1].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
+				point1.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.MidPot[i - 1].value) * pCPstruct->fPixPerY);
+				point2.X = pCPstruct->xMin + (int)(((pCPstruct->maxPos - pCPstruct->minPos) * ((float)(PlotData.MidPot[i].time - nFirstT)) / ((float)(nLastT - nFirstT))) * pCPstruct->fPixPerX);
+				point2.Y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.MidPot[i].value) * pCPstruct->fPixPerY);
 
 				pMemG->DrawLine(&axePen, point1, point2);
 			};
 		};
 	};
 
-	LeaveCriticalSection(&crSect);
+	LeaveCriticalSection(&criSect);
 
 }
 
-void CEFieldControl::SetPrintPoincareFlag(BOOL param)
+void CMiddlePotControl::SetPrintPoincareFlag(BOOL param)
 {
 	m_bPrintPoincare = param;
 }
 
 
-void CEFieldControl::PrintFile(FILE* pFile)
+void CMiddlePotControl::PrintFile(FILE* pFile)
 {
 	CoordParamStruct CPstruct = GetCoordParams();
 
-	EnterCriticalSection(&crSect);
+	EnterCriticalSection(&criSect);
 
 	if (m_bPrintPoincare)
 	{
-		for (unsigned int i = 1; i < PlotData.E0_Poin.size(); ++i)	// берется пара точек i, i+1
+		for (unsigned int i = 1; i < PlotData.MidPot_Poin.size(); ++i)	// берется пара точек i, i+1
 		{
-			if (PlotData.E0_Poin[i].value <= CPstruct.maxPot && PlotData.E0_Poin[i].value >= CPstruct.minPot)
+			if (PlotData.MidPot_Poin[i].value <= CPstruct.maxPot && PlotData.MidPot_Poin[i].value >= CPstruct.minPot)
 			{
-				fprintf_s(pFile, "%20.15f\n", PlotData.E0_Poin[i].value);
+				fprintf_s(pFile, "%20.15f\n", PlotData.MidPot_Poin[i].value);
 			};
 		};
 	}
@@ -364,12 +362,12 @@ void CEFieldControl::PrintFile(FILE* pFile)
 	{
 		for (unsigned int i = 1; i < PlotData.E0.size(); ++i)	// берется пара точек i, i+1
 		{
-			if (PlotData.E0[i].value <= CPstruct.maxPot && PlotData.E0[i].value >= CPstruct.minPot)
+			if (PlotData.MidPot[i].value <= CPstruct.maxPot && PlotData.MidPot[i].value >= CPstruct.minPot)
 			{
-				fprintf_s(pFile, "%20.15f\n", PlotData.E0[i].value);
+				fprintf_s(pFile, "%20.15f\n", PlotData.MidPot[i].value);
 			};
 		};
 	};
 
-	LeaveCriticalSection(&crSect);
+	LeaveCriticalSection(&criSect);
 }

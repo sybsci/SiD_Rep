@@ -193,7 +193,7 @@ void CPoincareMapControl::PaintGraph(Gdiplus::Graphics* pMemG, CoordParamStruct*
 	EnterCriticalSection(&critSect);
 	for (unsigned int i = 1; i < PlotData.nDotNumber; ++i)
 	{
-		if (PlotData.PMap[i] <= pCPstruct->maxPot && PlotData.PMap[i] >= pCPstruct->minPot)
+		if (PlotData.PMap[i] <= pCPstruct->maxPot && PlotData.PMap[i] >= pCPstruct->minPot && PlotData.PMap[i-1] <= pCPstruct->maxPot && PlotData.PMap[i-1] >= pCPstruct->minPot)
 		{
 			point.x = pCPstruct->xMin + (int)(PlotData.PMap[i] * pCPstruct->fPixPerX) - 1;
 			point.y = pCPstruct->edgingTop + (int)((pCPstruct->logOriginY - PlotData.PMap[i-1])*pCPstruct->fPixPerY) - 3;

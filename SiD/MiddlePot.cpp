@@ -1,50 +1,49 @@
-// EFieldDyn.cpp : implementation file
+// MiddlePot.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "SiD.h"
-#include "EFieldDyn.h"
+#include "MiddlePot.h"
 #include "afxdialogex.h"
 
 #include "SiDDlg.h"
 
+// CMiddlePot dialog
 
-// CEFieldDyn dialog
+IMPLEMENT_DYNAMIC(CMiddlePot, CDialogEx)
 
-IMPLEMENT_DYNAMIC(CEFieldDyn, CDialogEx)
-
-CEFieldDyn::CEFieldDyn(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CEFieldDyn::IDD, pParent)
+CMiddlePot::CMiddlePot(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CMiddlePot::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-CEFieldDyn::~CEFieldDyn()
+CMiddlePot::~CMiddlePot()
 {
 	DestroyWindow();
 }
 
-void CEFieldDyn::DoDataExchange(CDataExchange* pDX)
+void CMiddlePot::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_EFIELDGRAPH, m_stcGraph);
-	DDX_Control(pDX, IDC_PRINTE0PMAP, m_chkPrintE0PMap);
+	DDX_Control(pDX, IDC_MIDDLEPOTGRAPH, m_stcGraph);
+	DDX_Control(pDX, IDC_PRINTMIDDLEPOTPMAP, m_chkPrintMPPMap);
 }
 
 
-BEGIN_MESSAGE_MAP(CEFieldDyn, CDialogEx)
+BEGIN_MESSAGE_MAP(CMiddlePot, CDialogEx)
 	ON_WM_SIZE()
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BTN_SAVEEFIELD, &CEFieldDyn::OnBnClickedBtnSaveefield)
-	ON_BN_CLICKED(IDC_BTN_SAVETXTEFIELD, &CEFieldDyn::OnBnClickedBtnSavetxtefield)
-	ON_BN_CLICKED(IDC_PRINTE0PMAP, &CEFieldDyn::OnBnClickedPrinte0pmap)
+	ON_BN_CLICKED(IDC_BTN_SAVEMIDDLEPOT, &CMiddlePot::OnBnClickedBtnSavemiddlepot)
+	ON_BN_CLICKED(IDC_BTN_SAVETXTMIDDLEPOT, &CMiddlePot::OnBnClickedBtnSavetxtmiddlepot)
+	ON_BN_CLICKED(IDC_PRINTMIDDLEPOTPMAP, &CMiddlePot::OnBnClickedPrintmiddlepotpmap)
 END_MESSAGE_MAP()
 
 
-// CEFieldDyn message handlers
+// CMiddlePot message handlers
 
 
-void CEFieldDyn::OnSize(UINT nType, int cx, int cy)
+void CMiddlePot::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
 
@@ -67,54 +66,53 @@ void CEFieldDyn::OnSize(UINT nType, int cx, int cy)
 }
 
 
-void CEFieldDyn::OnOK()
+void CMiddlePot::OnOK()
 {
 	//CDialogEx::OnOK();
 }
 
 
-void CEFieldDyn::SetEnableSaveButton(BOOL set)
+void CMiddlePot::SetEnableSaveButton(BOOL set)
 {
-	GetDlgItem(IDC_BTN_SAVEEFIELD)->EnableWindow(set);
-	GetDlgItem(IDC_BTN_SAVETXTEFIELD)->EnableWindow(set);
+	GetDlgItem(IDC_BTN_SAVEMIDDLEPOT)->EnableWindow(set);
+	GetDlgItem(IDC_BTN_SAVETXTMIDDLEPOT)->EnableWindow(set);
 }
 
 
-void CEFieldDyn::InitializeYAxe()
+void CMiddlePot::InitializeYAxe()
 {
 	m_stcGraph.InitializeYAxe();
 }
 
 
-void CEFieldDyn::UpdateGraph()
+void CMiddlePot::UpdateGraph()
 {
 	m_stcGraph.Invalidate();
 }
 
 
-
-void CEFieldDyn::OnClose()
+void CMiddlePot::OnClose()
 {
 	CDialogEx::OnClose();
 
 	CSiDDlg* pMainDlg = (CSiDDlg*)AfxGetMainWnd();
-	pMainDlg->m_chkEField.SetCheck(0);
-	pMainDlg->DestroyEFieldWnd();
+	pMainDlg->m_chkMiddlePot.SetCheck(0);
+	pMainDlg->DestroyMiddlePotWnd();
 }
 
 
-BOOL CEFieldDyn::OnInitDialog()
+BOOL CMiddlePot::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	CButton *pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVEEFIELD);
+	CButton *pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVEMIDDLEPOT);
 	HANDLE hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_SAVESCREEN), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
 	pBtn->SetIcon((HICON)hBtnIcon);
 
-	pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVETXTEFIELD);
+	pBtn = (CButton*)this->GetDlgItem(IDC_BTN_SAVETXTMIDDLEPOT);
 	hBtnIcon = LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_SAVETXTDATA), IMAGE_ICON, 0, 0, LR_LOADMAP3DCOLORS);
 	pBtn->SetIcon((HICON)hBtnIcon);
 
@@ -122,11 +120,11 @@ BOOL CEFieldDyn::OnInitDialog()
 }
 
 
-void CEFieldDyn::OnBnClickedBtnSaveefield()
+void CMiddlePot::OnBnClickedBtnSavemiddlepot()
 {
 	CFileDialog dialog(FALSE,
 		CString(_T("png")),
-		CString(_T("Эл. поле")),
+		CString(_T("Потенциал в середине диода")),
 		6UL,
 		_T("PNG (*.png)|*.png|JPG (*.jpg)|*.jpg; *.jpeg|BMP (*.bmp)|*.bmp|All Files (*.*)|*.*||"),
 		this);
@@ -168,11 +166,11 @@ void CEFieldDyn::OnBnClickedBtnSaveefield()
 }
 
 
-void CEFieldDyn::OnBnClickedBtnSavetxtefield()
+void CMiddlePot::OnBnClickedBtnSavetxtmiddlepot()
 {
 	CFileDialog dialog(FALSE,
 		CString(_T("txt")),
-		CString(_T("Эл. поле")),
+		CString(_T("Потенциал в середине диода")),
 		6UL,
 		_T("txt (*.txt)|*.txt|All Files (*.*)|*.*||"),
 		this);
@@ -196,9 +194,9 @@ void CEFieldDyn::OnBnClickedBtnSavetxtefield()
 }
 
 
-void CEFieldDyn::OnBnClickedPrinte0pmap()
+void CMiddlePot::OnBnClickedPrintmiddlepotpmap()
 {
-	m_stcGraph.SetPrintPoincareFlag(m_chkPrintE0PMap.GetCheck());
+	m_stcGraph.SetPrintPoincareFlag(m_chkPrintMPPMap.GetCheck());
 	m_stcGraph.InitializeYAxe();
 	m_stcGraph.Invalidate();
 }

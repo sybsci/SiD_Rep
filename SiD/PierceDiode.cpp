@@ -35,16 +35,32 @@ CPierceDiode::CPierceDiode(CSiDDlg* _pParentWnd)
 	PlotData.pNumber = 0;
 	PlotData.fAlphaWithoutPi = 1.1;
 
-	PlotData.nDotNumber = 100;
+	PlotData.nDotNumber = 250;
 	PlotData.PMap = std::vector<double>(PlotData.nDotNumber, 0.);
 
-	PlotData.fMaxE0 = 1.0;
+	PlotData.fMaxPMap = 0.5;
+
+	PlotData.fMaxE0 = 1.5;
 	PlotData.fMinE0 = 0.0;
+
+	PlotData.fMaxE0_Poin = 1.5;
+	PlotData.fMinE0_Poin = 0.0;
+
+	PlotData.fMaxMP = 0.5;
+	PlotData.fMinMP = 0.;
+
+	PlotData.fMaxMP_Poin = 0.5;
+	PlotData.fMinMP_Poin = 0.;
 
 	DotStruct dotE0;
 	dotE0.time = 0;
 	dotE0.value = 0.;
+
 	PlotData.E0.push_back(dotE0);
+	PlotData.E0_Poin.push_back(dotE0);
+
+	PlotData.MidPot.push_back(dotE0);
+	PlotData.MidPot_Poin.push_back(dotE0);
 }
 
 
@@ -92,7 +108,6 @@ void CPierceDiode::ResumeSimulation(){
 	double rel, shift, force;
 	int ind;
 	
-
 	double fMaxVel, fMinVel;
 	double fMaxPot, fMinPot;
 
@@ -101,9 +116,11 @@ void CPierceDiode::ResumeSimulation(){
 	double z1 = 0., z2 = 0., z3 = 0.;
 	double E0prev = 0., E0prevprev = 0.;
 
-	DotStruct dotE0, dotE0_Poin;
+	DotStruct dotE0, dotE0_Poin, dotMidPot, dotMidPot_Poin;
 
 	size_t denSize = (Ng + 1) * sizeof(double);
+
+	long long int nMinTimeInSeria;
 
 	while (bSimIsRun){
 
@@ -167,6 +184,30 @@ void CPierceDiode::ResumeSimulation(){
 				PlotData.PMap.insert(PlotData.PMap.begin(), z2);
 				if (PlotData.PMap.size() > PlotData.nDotNumber)
 					PlotData.PMap.erase(PlotData.PMap.begin() + PlotData.nDotNumber);
+
+				if (z2 > PlotData.fMaxPMap)
+					PlotData.fMaxPMap = z2;
+
+				dotMidPot_Poin.time = nTimeCount;
+				dotMidPot_Poin.value = z2;
+				PlotData.MidPot_Poin.insert(PlotData.MidPot_Poin.begin(), dotMidPot_Poin);
+
+				nMinTimeInSeria = PlotData.MidPot[PlotData.MidPot.size() - 1].time;
+
+				for (unsigned int i = PlotData.MidPot_Poin.size() - 1; i >= 0; --i)
+				{
+					if (PlotData.MidPot_Poin[i].time < nMinTimeInSeria)
+						PlotData.MidPot_Poin.erase(PlotData.MidPot_Poin.begin() + i);
+					else
+						break;
+				};
+
+				if (dotMidPot_Poin.value > PlotData.fMaxMP_Poin)
+					PlotData.fMaxMP_Poin = dotMidPot_Poin.value;
+
+				if (dotMidPot_Poin.value < PlotData.fMinMP_Poin)
+					PlotData.fMinMP_Poin = dotMidPot_Poin.value;
+
 			LeaveCriticalSection(&critS);
 		};
 
@@ -189,6 +230,21 @@ void CPierceDiode::ResumeSimulation(){
 			if (E[0] < PlotData.fMinE0)
 				PlotData.fMinE0 = E[0];
 
+
+			//а также потенциал в середине
+			dotMidPot.time = nTimeCount;
+			dotMidPot.value = pot[Ng / 2];
+			PlotData.MidPot.insert(PlotData.MidPot.begin(), dotMidPot);
+
+			if (PlotData.MidPot.size() > MaxSizeOfE0)
+				PlotData.MidPot.erase(PlotData.MidPot.begin() + MaxSizeOfE0);
+
+			if (pot[Ng / 2] > PlotData.fMaxMP)
+				PlotData.fMaxMP = pot[Ng / 2];
+
+			if (pot[Ng / 2] < PlotData.fMinMP)
+				PlotData.fMinMP = pot[Ng / 2];
+
 			LeaveCriticalSection(&critS);
 		};
 
@@ -200,8 +256,22 @@ void CPierceDiode::ResumeSimulation(){
 			dotE0_Poin.value = E0prev;
 			PlotData.E0_Poin.insert(PlotData.E0_Poin.begin(), dotE0_Poin);
 
-			if (PlotData.E0_Poin.size() > MaxSizeOfE0_Poin)
-				PlotData.E0_Poin.erase(PlotData.E0_Poin.begin() + MaxSizeOfE0_Poin);
+			nMinTimeInSeria = PlotData.E0[PlotData.E0.size() - 1].time;
+
+			for (unsigned int i = PlotData.E0_Poin.size() - 1; i >= 0; --i)
+			{
+				if (PlotData.E0_Poin[i].time < nMinTimeInSeria)
+					PlotData.E0_Poin.erase(PlotData.E0_Poin.begin() + i);
+				else
+					break;
+			};
+
+
+			if (dotE0_Poin.value > PlotData.fMaxE0_Poin)
+				PlotData.fMaxE0_Poin = dotE0_Poin.value;
+
+			if (dotE0_Poin.value < PlotData.fMinE0_Poin)
+				PlotData.fMinE0_Poin = dotE0_Poin.value;
 
 			LeaveCriticalSection(&critS);
 		};
@@ -294,11 +364,20 @@ void CPierceDiode::ClearData()
 	PlotData.fMinVel = 0.f;
 	PlotData.fMaxPot = 1.f;
 	PlotData.fMinPot = 0.f;
-	PlotData.fMaxE0 = 1.f;
-	PlotData.fMinE0 = 0.f;
+	PlotData.fMaxPMap = 0.5;
+	PlotData.fMaxE0 = 1.5;
+	PlotData.fMinE0 = 0.;
+	PlotData.fMaxE0_Poin = 1.5;
+	PlotData.fMinE0_Poin = 0.;
+	PlotData.fMaxMP = 0.5;
+	PlotData.fMinMP = 0.;
+	PlotData.fMaxMP_Poin = 0.5;
+	PlotData.fMinMP_Poin = 0.;
 
 	PlotData.E0.clear();
 	PlotData.E0_Poin.clear();
+	PlotData.MidPot.clear();
+	PlotData.MidPot_Poin.clear();
 
 	DotStruct dotE0;
 	dotE0.time = 0;
@@ -306,6 +385,8 @@ void CPierceDiode::ClearData()
 
 	PlotData.E0.push_back(dotE0);
 	PlotData.E0_Poin.push_back(dotE0);
+	PlotData.MidPot.push_back(dotE0);
+	PlotData.MidPot_Poin.push_back(dotE0);
 
 	PlotData.PMap = std::vector<double>(PlotData.nDotNumber, 0.);
 

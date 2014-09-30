@@ -63,6 +63,12 @@
     <ClInclude Include="EFieldControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MiddlePot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiddlePotControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SiD.cpp">
@@ -99,6 +105,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EFieldControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MiddlePot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MiddlePotControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

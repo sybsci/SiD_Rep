@@ -29,7 +29,14 @@ struct PlotStruct{
 
 	double fMaxVel, fMinVel;
 	double fMaxPot, fMinPot;
+
+	double fMaxPMap;
+
 	double fMaxE0, fMinE0;
+	double fMaxE0_Poin, fMinE0_Poin;
+
+	double fMaxMP, fMinMP;
+	double fMaxMP_Poin, fMinMP_Poin;
 
 	double fAlphaWithoutPi;
 
@@ -38,6 +45,9 @@ struct PlotStruct{
 
 	std::vector<DotStruct> E0;
 	std::vector<DotStruct> E0_Poin;
+
+	std::vector<DotStruct> MidPot;
+	std::vector<DotStruct> MidPot_Poin;
 	
 };
 

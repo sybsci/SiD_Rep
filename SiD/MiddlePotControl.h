@@ -1,23 +1,25 @@
 #pragma once
 #include "CommonData.h"
 
-// CEFieldControl
+// CMiddlePotControl
 
-class CEFieldControl : public CStatic
+class CMiddlePotControl : public CStatic
 {
-	DECLARE_DYNAMIC(CEFieldControl)
+	DECLARE_DYNAMIC(CMiddlePotControl)
 
 public:
-	CEFieldControl();
-	virtual ~CEFieldControl();
+	CMiddlePotControl();
+	virtual ~CMiddlePotControl();
 
 protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	double m_fMinE, m_fMaxE;
-	int m_nMinE, m_nMaxE;
+	double m_fMinPot, m_fMaxPot;
+	int m_nMinPot, m_nMaxPot;
+
 	std::vector<CString> m_vecYAxe;
+	BOOL m_bPrintPoincare;
 
 	CString fnGetTickLabelText(int);
 
@@ -25,12 +27,9 @@ public:
 	void InitializeYAxe();
 	void PaintGraph(Gdiplus::Graphics*, CoordParamStruct*);
 	CoordParamStruct GetCoordParams();
-	afx_msg void OnPaint();
-private:
-	BOOL m_bPrintPoincare;
-public:
 	void SetPrintPoincareFlag(BOOL param);
 	void PrintFile(FILE*);
+	afx_msg void OnPaint();
 };
 
 

@@ -13,6 +13,7 @@ class CPhaseDiagWnd;	//ξαϊÿβλεν β PhaseDiagWnd.h
 class CPotDiagWnd;		//ξαϊÿβλεν β PotDiagWnd.h
 class CPoincareMap;		//ξαϊÿβλεν β PotDiagWnd.h
 class CEFieldDyn;		//ξαϊÿβλεν β EFieldDyn.h
+class CMiddlePot;		//ξαϊÿβλεν β MiddlePot.h
 
 
 // CSiDDlg dialog
@@ -91,6 +92,7 @@ public:
 	void DestroyPotDiagWnd();
 	void DestroyPMapDiagWnd();
 	void DestroyEFieldWnd();
+	void DestroyMiddlePotWnd();
 	void RedrawGraphs();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPotdiag();
@@ -101,6 +103,9 @@ public:
 	CButton m_chkEField;
 	CEFieldDyn* pEFieldWnd;
 	afx_msg void OnBnClickedEfield();
+	afx_msg void OnBnClickedMiddlepot();
+	CButton m_chkMiddlePot;
+	CMiddlePot* pMiddlePotWnd;
 };
 
 
